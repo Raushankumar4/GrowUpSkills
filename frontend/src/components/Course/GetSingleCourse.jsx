@@ -7,6 +7,8 @@ import {
   ClockIcon,
   AcademicCapIcon,
 } from '@heroicons/react/24/outline';
+import VideoJS from '../VideoPlayer/VideoPlayer';
+import '../VideoPlayer/VideoPlayer.css';
 
 const GetSingleCourse = () => {
   const { courseId } = useParams();
@@ -14,9 +16,8 @@ const GetSingleCourse = () => {
   const [lectures, setLectures] = useState([]);
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [courseProgress, setCourseProgress] = useState({});
-  const [videoDuration, setVideoDuration] = useState('');
-  const videoRef = useRef(null);
-
+  const [videoDuration, setVideoDuration] = useState(null);
+  const playerRef = useRef(null);
   const getCourse = async () => {
     try {
       const { data } = await axiosInstance.get(`course?id=${courseId}`);
@@ -38,23 +39,24 @@ const GetSingleCourse = () => {
     }
   };
 
-  const markasCompletedLecture = async (courseId, lectureOrder) => {
+  const markAsCompletedLecture = async (courseId, lectureOrder) => {
     try {
       await axiosInstance.post("add-course-progress", {
-        courseId, lectureOrder
+        courseId,
+        lectureOrder,
       });
       getCourseProgress();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   const getCourseProgress = async () => {
     try {
-      const { data } = await axiosInstance.get(courseId);
+      const { data } = await axiosInstance.get(`course-progress/${courseId}`);
       setCourseProgress(data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -64,9 +66,32 @@ const GetSingleCourse = () => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
-  const handleLoadedMetadata = () => {
-    const duration = videoRef.current.duration;
-    setVideoDuration(formatTime(duration));
+  const videoJsOptions = {
+    autoplay: false,
+    controls: true,
+    responsive: true,
+    fluid: true,
+    sources: selectedLecture?.videoUrl
+      ? [
+        {
+          src: `https://skillbridge-backend-1.onrender.com/stream/${selectedLecture.videoUrl.split('/').pop()}`,
+          type: 'video/mp4',
+        },
+      ]
+      : [],
+  };
+
+  const handlePlayerReady = (player) => {
+    playerRef.current = player;
+
+    player.on('loadedmetadata', () => {
+      const duration = player.duration();
+      setVideoDuration(formatTime(duration));
+    });
+
+    player.on('ended', () => {
+      markAsCompletedLecture(courseId, selectedLecture.order);
+    });
   };
 
   useEffect(() => {
@@ -84,37 +109,34 @@ const GetSingleCourse = () => {
             <AcademicCapIcon className="h-8 w-8 text-indigo-500" />
             {course?.title}
           </h1>
-          <p className="text-gray-500 mt-2 text-lg max-w-2xl mx-auto">{course?.description}</p>
+          <p className="text-gray-500 mt-2 text-lg max-w-2xl mx-auto">
+            {course?.description}
+          </p>
         </div>
 
         {/* Progress Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            {
-              label: 'Completed',
-              value: courseProgress?.completedLectures?.length || 0,
-              icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
-              color: 'bg-green-50 text-green-600',
-            },
-            {
-              label: 'Remaining',
-              value: courseProgress?.remainingCount || 0,
-              icon: <ClockIcon className="h-6 w-6 text-yellow-500" />,
-              color: 'bg-yellow-50 text-yellow-600',
-            },
-            {
-              label: 'Total',
-              value: courseProgress?.totalLectures || 0,
-              icon: <PlayCircleIcon className="h-6 w-6 text-blue-500" />,
-              color: 'bg-blue-50 text-blue-600',
-            },
-            {
-              label: courseProgress?.percentage === 100 ? '🎓 Completed' : 'Progress',
-              value: `${courseProgress?.percentage || 0}%`,
-              icon: <AcademicCapIcon className="h-6 w-6 text-purple-500" />,
-              color: 'bg-purple-50 text-purple-600',
-            },
-          ].map((card, idx) => (
+          {[{
+            label: 'Completed',
+            value: courseProgress?.completedLectures?.length || 0,
+            icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
+            color: 'bg-green-50 text-green-600',
+          }, {
+            label: 'Remaining',
+            value: courseProgress?.remainingCount || 0,
+            icon: <ClockIcon className="h-6 w-6 text-yellow-500" />,
+            color: 'bg-yellow-50 text-yellow-600',
+          }, {
+            label: 'Total',
+            value: courseProgress?.totalLectures || 0,
+            icon: <PlayCircleIcon className="h-6 w-6 text-blue-500" />,
+            color: 'bg-blue-50 text-blue-600',
+          }, {
+            label: courseProgress?.percentage === 100 ? '🎓 Completed' : 'Progress',
+            value: `${courseProgress?.percentage || 0}%`,
+            icon: <AcademicCapIcon className="h-6 w-6 text-purple-500" />,
+            color: 'bg-purple-50 text-purple-600',
+          }].map((card, idx) => (
             <div
               key={idx}
               className={`p-4 rounded-xl border border-gray-100 shadow-sm ${card.color} backdrop-blur-sm transition hover:shadow-md`}
@@ -154,20 +176,16 @@ const GetSingleCourse = () => {
 
           {/* Video Player */}
           <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100 md:col-span-2">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">🎥 Watch Lecture</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-4">
+              🎥 Watch Lecture
+            </h3>
             {selectedLecture?.videoUrl ? (
-              <div>
-                <p className="text-gray-600 mb-2">⏱ Duration: {videoDuration || "Loading..."}</p>
-                <div className="aspect-video rounded overflow-hidden border border-gray-200">
-                  <video
-                    ref={videoRef}
-                    controls
-                    onEnded={() => markasCompletedLecture(courseId, selectedLecture.order)}
-                    onLoadedMetadata={handleLoadedMetadata}
-                    src={`http://localhost:4000/stream/${selectedLecture?.videoUrl.split('/').pop()}`}
-                    className="w-full h-full object-contain"
-                  />
+              <div className="aspect-video rounded overflow-hidden border border-gray-200">
+                {/* Display Duration */}
+                <div className="text-center text-gray-600 mb-2">
+                  {videoDuration ? `⏱ Duration: ${videoDuration}` : "⏱ Loading..."}
                 </div>
+                <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
               </div>
             ) : (
               <p className="text-center text-gray-400 py-8">No video selected</p>
