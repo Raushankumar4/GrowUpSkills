@@ -1,3 +1,16 @@
 node_modules
-
+package-lock.json
+dist
+yarn-error.log
+.vscode
+.DS_Store
 .env
+*.log
+*.env
+*.local
+*.local.*
+*.local.*.json
+*.local.*.yaml
+*.local.*.yml
+*.local.*.toml
+
