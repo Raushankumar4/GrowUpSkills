@@ -101,7 +101,7 @@ const GetSingleCourse = () => {
   }, [courseId]);
 
   return (
-    <div className="bg-gradient-to-br from-[#f8fafc] to-white min-h-screen px-4 md:px-8 py-10">
+    <div className="bg-gradient-to-br from-[#f8fafc] to-white min-h-screen px-4 md:px-8 py-10 ">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Course Info */}
         <div className="text-center">
@@ -180,10 +180,17 @@ const GetSingleCourse = () => {
               🎥 Watch Lecture
             </h3>
             {selectedLecture?.videoUrl ? (
-              <div className="aspect-video rounded overflow-hidden border border-gray-200">
-                {/* Display Duration */}
-                <div className="text-center text-gray-600 mb-2">
-                  {videoDuration ? `⏱ Duration: ${videoDuration}` : "⏱ Loading..."}
+              <div>
+                <p className="text-gray-600 mb-2">⏱ Duration: {videoDuration || "Loading..."}</p>
+                <div className="aspect-video rounded overflow-hidden border border-gray-200">
+                  <video
+                    ref={videoRef}
+                    controls
+                    onEnded={() => markasCompletedLecture(courseId, selectedLecture.order)}
+                    onLoadedMetadata={handleLoadedMetadata}
+                    src={`http://localhost:4000/stream/${selectedLecture?.videoUrl.split('/').pop()}`}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
               </div>
