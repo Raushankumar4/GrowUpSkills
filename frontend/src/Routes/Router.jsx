@@ -1,30 +1,72 @@
+import CourseTable from "@/components/Admin/ManageCourse/CourseTable";
+import CourseView from "@/components/Admin/ManageCourse/CourseView";
+import ManageCourses from "@/components/Admin/ManageCourse/ManageCourses";
+import UserManagement from "@/components/Admin/ManageCourse/UserManagment";
+import ForgotPassword from "@/components/Auth/ForgotPassword";
+import OAuthSuccess from "@/components/Auth/OAuthSuccess";
+import ResetPassword from "@/components/Auth/ResetPassword";
+import ErrorBoundary from "@/components/Error/ErrorBoundary";
+import RouterError from "@/components/Error/RouterError";
+import Loading from "@/components/Loading/Loading";
+import React, { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
-import Profile from "../components/User/Profile";
-import Login from "../components/Auth/Login";
-import Courses from "../components/Course/Courses";
-import GetSingleCourse from "../components/Course/GetSingleCourse";
-import App from "../App";
-import PurchaseSuccess from "../components/Course/PurchaseSuccess";
-import { Razorpay } from "../razorpay/razorpay";
-import PaymentSuccess from "../razorpay/PaymentSuccess";
+
+const App = lazy(() => import("../App"));
+const Profile = lazy(() => import("../components/User/Profile"));
+const PurchaseSuccess = lazy(() => import("../components/Course/PurchaseSuccess"));
+const AdminDashboard = lazy(() => import("../components/Admin/AdminDashboard"));
+const PaymentSuccess = lazy(() => import("../razorpay/PaymentSuccess"));
+const SearchCourse = lazy(() => import("../components/Course/SearchCourse"));
+const CreateCourse = lazy(() => import("@/components/Admin/CreateCoures/CreateCourse"));
+const CourseDetails = lazy(() => import("@/components/Course/CourseDetails"));
+const CourseCard = lazy(() => import("@/razorpay/CourseCard"));
+const AuthForm = lazy(() => import("@/components/Auth/AuthForm"));
+const StudyCourse = lazy(() => import("@/components/Course/StudyCourse"));
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-    errorElement: (
-      <h1 className="w-screen flex justify-center items-center h-screen text-center font-bold text-4xl ">
-        Page Not Found 404!
-      </h1>
+    element: (
+      <ErrorBoundary>
+        <Suspense fallback={<Loading />}>
+          <App />
+        </Suspense>
+      </ErrorBoundary>
     ),
+    errorElement: <RouterError />,
     children: [
-      { path: "profile", element: <Profile /> },
-      { path: "courses/:courseId", element: <GetSingleCourse /> },
+      { path: "/profile", element: <Profile /> },
+      { path: "course/:courseId", element: <CourseDetails /> },
       { path: "purchase-success", element: <PurchaseSuccess /> },
-      { path: "razorpay", element: <Razorpay /> },
+      { path: "/courses/search", element: <SearchCourse /> },
+      { path: "courses", element: <CourseCard /> },
+      { path: "/oauth-success", element: <OAuthSuccess /> },
+
     ],
   },
-  { path: "courses", element: <Courses /> },
-  { path: "login", element: <Login /> },
-  { path: "paymentSuccess", element: <PaymentSuccess /> }
+
+  { path: "login", element: <AuthForm /> },
+  { path: "paymentSuccess", element: <PaymentSuccess /> },
+  { path: "/study/:courseId", element: <StudyCourse /> },
+  { path: "forgot", element: <ForgotPassword /> },
+  { path: "reset-password/:token", element: <ResetPassword /> },
+
+
+  // Admin
+  {
+    path: "/dashboard",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <AdminDashboard />
+      </Suspense>
+    ),
+    children: [
+      { path: "create-course", element: <CreateCourse /> },
+      { path: "manage-courses", element: <ManageCourses /> },
+      { path: "user-management", element: <UserManagement /> },
+      { path: "manage-courses/courses/:courseId", element: <CourseView /> }
+
+    ],
+  },
 ]);
+

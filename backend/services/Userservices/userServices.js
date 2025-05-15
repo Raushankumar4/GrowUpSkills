@@ -1,68 +1,28 @@
 import bcrypt from "bcrypt";
-import User from "../../user.model.js";
-import { generateToken } from "../../generateToken.js";
+import User from "../../models/user.model.js";
+import { generateToken } from "../../utils/generateToken.js";
 
-const registerUser = async ({
-  username,
-  email,
-  password,
-  loginOption,
-  enrollement,
-  studentID,
-  dob,
-}) => {
-  if (
-    !username ||
-    !email ||
-    !password ||
-    !loginOption ||
-    !enrollement ||
-    !studentID ||
-    !dob
-  ) {
-    throw new Error("All fields are required!");
-  }
-  const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-  if (existingUser) {
-    throw new Error(
-      "Email or username already exists! Please use a different one."
-    );
-  }
-
-  const hashPassword = await bcrypt.hash(password, 10);
-
-  const newUser = await User.create({
-    username,
-    email,
-    password: hashPassword,
-    loginOption,
-    enrollement,
-    studentID,
-    dob,
-  });
-  if (!newUser) {
-    throw new Error("Something went wrong during registration!");
-  }
-
-  return { message: "Registered Successfully!" };
-};
-
-const loginUser = async ({ email, password }) => {
+const loginUser = async ({ email, password }, res) => {
   if (!email || !password) {
     throw new Error("All fields are required!");
   }
-  let user;
-  user = await User.findOne({ email });
+
+  const user = await User.findOne({ email });
   if (!user) {
     throw new Error("User Not Found!");
   }
-  const comparedPassword = await bcrypt.compare(password, user.password);
+
+  if (user.authType === "google" && user.password === "google-oauth") {
+    throw new Error("Please login using Google Sign-In.");
+  }
+
+  const comparedPassword = bcrypt.compare(password, user.password);
   if (!comparedPassword) {
     throw new Error("Wrong Password!");
   }
-  user = await User.findOne({ email }).select("-password");
 
-  return { message: "Login Sucessfully !", user };
+  const token = generateToken(res, user);
+  return { message: "Login Successfully!", token, authType: user.authType };
 };
 
 const loginWithEnrollmentOrStudentID = async (
@@ -102,7 +62,6 @@ const getProfile = async (req) => {
 };
 
 export default {
-  registerUser,
   loginUser,
   getProfile,
   loginWithEnrollmentOrStudentID,

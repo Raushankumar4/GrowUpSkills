@@ -5,6 +5,7 @@ const lectureSchema = new mongoose.Schema(
     title: { type: String, required: true },
     duration: { type: String, required: true },
     videoUrl: { type: String, required: true },
+    videoUrlPublicId: String,
     order: { type: Number, required: true },
     course: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,4 +16,4 @@ const lectureSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Lecture", lectureSchema);
+export const Lecture = mongoose.model("Lecture", lectureSchema);

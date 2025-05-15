@@ -1,5 +1,5 @@
 import express from "express";
-import { streamVideo } from "../stream.js";
+import { streamVideo } from "../utils/stream.js";
 
 const router = express.Router();
 

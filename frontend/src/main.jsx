@@ -5,6 +5,7 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { UserProvider } from "./context/UserContext.jsx";
 import { router } from "./Routes/Router.jsx";
 import { RouterProvider } from "react-router-dom";
+import { Toaster } from "sonner";
 
 createRoot(document.getElementById("root")).render(
 
@@ -13,6 +14,7 @@ createRoot(document.getElementById("root")).render(
     <AuthProvider>
       <UserProvider>
         <RouterProvider router={router} />
+        <Toaster position="bottom-right" />
       </UserProvider>
     </AuthProvider>
   </StrictMode>

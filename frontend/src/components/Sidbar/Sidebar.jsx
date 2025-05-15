@@ -8,15 +8,27 @@ import {
   FaCertificate,
   FaShoppingCart,
   FaUser,
+  FaUsersCog,
+  FaChartBar,
+  FaCogs,
+  FaClipboardList,
+  FaUsers,
+  FaDatabase,
+  FaCreditCard,
+  FaDollarSign,
 } from "react-icons/fa";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useUserContext } from "@/context/UserContext";
 
-const Sidebar = ({ setActive }) => {
-  const [isOpen, setIsOpen] = useState(true);
-  const [activeItem, setActiveItem] = useState("Dashboard");
+const Sidebar = ({ isOpen, setIsOpen }) => {
+
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const { pathname } = useLocation();
 
-  // Collapse and disable open on small screens
+  const { userData } = useUserContext();
+
   useEffect(() => {
     const checkScreen = () => {
       if (window.innerWidth < 640) {
@@ -34,66 +46,97 @@ const Sidebar = ({ setActive }) => {
   }, []);
 
   const menuItems = [
-    { name: "Dashboard", icon: <FaTachometerAlt /> },
-    { name: "Announcements", icon: <FaBullhorn /> },
-    { name: "My Courses", icon: <FaBook /> },
-    { name: "Calendar", icon: <FaCalendarAlt /> },
-    { name: "Exams", icon: <FaFileAlt /> },
-    { name: "Certificates", icon: <FaCertificate /> },
-    { name: "My Purchases", icon: <FaShoppingCart /> },
-    { name: "Profile", icon: <FaUser /> },
+    { name: "Dashboard", icon: <FaTachometerAlt />, path: "/dashboard" },
+    { name: "Announcements", icon: <FaBullhorn />, path: "/announcements" },
+    { name: "My Courses", icon: <FaBook />, path: "/courses" },
+    { name: "Calendar", icon: <FaCalendarAlt />, path: "/calendar" },
+    { name: "Exams", icon: <FaFileAlt />, path: "/exams" },
+    { name: "Certificates", icon: <FaCertificate />, path: "/certificates" },
+    { name: "My Purchases", icon: <FaShoppingCart />, path: "/purchases" },
+    { name: "Profile", icon: <FaUser />, path: "/profile" },
   ];
 
-  const handleItemClick = (name) => {
-    setActive(name);
-    setActiveItem(name);
-  };
+  const adminMenuItems = [
+    { name: "Dashboard", icon: <FaTachometerAlt />, path: "/dashboard" },
+    { name: "User Management", icon: <FaUsersCog />, path: "/dashboard/user-management" },
+    { name: "Reports", icon: <FaChartBar />, path: "/dashboard/create-course" },
+    { name: "Manage Courses", icon: <FaClipboardList />, path: "/dashboard/manage-courses" },
+    { name: "Analytics", icon: <FaDatabase />, path: "/admin/analytics" },
+    { name: "Content Management", icon: <FaBook />, path: "/admin/content-management" },
+    { name: "Payment History", icon: <FaCreditCard />, path: "/admin/payment-history" },
+    { name: "Revenue", icon: <FaDollarSign />, path: "/admin/revenue" },
+    { name: "Settings", icon: <FaCogs />, path: "/admin/settings" },
+    { name: "Profile", icon: <FaUser />, path: "/profile" },
+  ];
+
+
 
   return (
     <div
-      className={`${isOpen ? "w-64" : "w-20"
-        } bg-white border-r border-purple-200 shadow-sm min-h-screen p-4 duration-300 relative`}
+      className={`${isOpen ? "w-64" : "w-20"} z-50 bg-white  border-r border-purple-200 shadow-sm h-full  p-4 duration-300 relative`}
     >
-      {/* Toggle button only on large screens */}
+      {/* Toggle button */}
       {!isSmallScreen && (
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="absolute top-4 right-[-14px] bg-purple-600 text-white p-1 rounded-full z-10 shadow"
         >
-          {isOpen ? (
-            <ChevronLeftIcon className="w-5 h-5" />
-          ) : (
-            <ChevronRightIcon className="w-5 h-5" />
-          )}
+          {isOpen ? <ChevronLeftIcon className="w-5 h-5" /> : <ChevronRightIcon className="w-5 h-5" />}
         </button>
       )}
 
-      {/* Logo */}
-      <h1
-        className={`text-2xl font-bold text-purple-700 mb-6 ${!isOpen && "hidden"
-          }`}
-      >
-        YHills
-      </h1>
+      {/* SkillHub Logo */}
+      <h1 className={`text-2xl font-bold text-purple-700 mb-6 ${!isOpen && "hidden"}`}>SkillHub</h1>
 
-      {/* Navigation */}
-      <ul className="space-y-2">
-        {menuItems.map((item) => (
-          <li
-            key={item.name}
-            onClick={() => handleItemClick(item.name)}
-            className={`flex items-center space-x-3 cursor-pointer px-3 py-3 rounded-lg transition-all duration-200
-              ${activeItem === item.name
-                ? "bg-purple-500 text-white font-semibold"
-                : "hover:bg-purple-100 text-gray-700"
-              }`}
-          >
-            <span className="text-lg">{item.icon}</span>
-            <span className={`${!isOpen && "hidden"} truncate`}>{item.name}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+      {/* Main Menu */}
+      {userData?.role !== "Admin" && (
+        <ul className="space-y-2">
+          {menuItems.map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`flex  items-center space-x-3 cursor-pointer px-3 py-3 rounded-lg transition-all duration-200 ${item.path === "/dashboard"
+                ? pathname === item.path
+                : pathname.startsWith(item.path)
+                  ? "bg-purple-500 text-white font-semibold"
+                  : "hover:bg-purple-100 text-gray-700"
+                }`}
+            >
+              <span className="text-lg">{item.icon}</span>
+              <span className={`${!isOpen && "hidden"} truncate`}>{item.name}</span>
+            </Link>
+          ))}
+        </ul>
+      )
+      }
+
+      {/* Admin Panel */}
+      {
+        userData?.role === "Admin" && (
+          <>
+            <hr className="my-4 border-purple-200" />
+            <h2 className={`text-xs text-gray-500 uppercase tracking-wide ${!isOpen && "hidden"}`}>Admin Panel</h2>
+            <ul className="space-y-2 mt-2">
+              {adminMenuItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`flex  items-center space-x-3 cursor-pointer px-3 py-3 rounded-lg transition-all duration-200 ${item.path === "/dashboard"
+                    ? pathname === item.path
+                    : pathname.startsWith(item.path)
+                      ? "bg-purple-500 text-white font-semibold"
+                      : "hover:bg-purple-100 text-gray-700"
+                    }`}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  <span className={`${!isOpen && "hidden"} truncate`}>{item.name}</span>
+                </Link>
+              ))}
+            </ul>
+          </>
+        )
+      }
+    </div >
   );
 };
 

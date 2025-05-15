@@ -8,14 +8,15 @@ import { useAuthContext } from "../../context/AuthContext";
 const Login = () => {
   const [formData, setFormData] = useState({ loginOption: 'enrollment', enrollment: '', studentID: '', dob: '' });
   const [error, setError] = useState({});
-  const { setAuthToken, authToken } = useAuthContext();
+  const { setAuthToken } = useAuthContext();
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token")
   useEffect(() => {
-    if (authToken) {
-      navigate('/profile', { replace: true });
+    if (token) {
+      navigate("/", { replace: true })
     }
-  }, [authToken, navigate]);
+  }, [])
 
   const isValid = () => {
     let newErrors = {};
@@ -44,7 +45,7 @@ const Login = () => {
       const { data } = await axiosInstance.post('student-login', filteredData);
       localStorage.setItem('token', data?.token);
       setAuthToken(data?.token);
-      navigate('/profile', { replace: true });
+      navigate('/');
     } catch (err) {
       setError({ server: err.response?.data?.message || 'Login failed. Please try again.' });
     }
