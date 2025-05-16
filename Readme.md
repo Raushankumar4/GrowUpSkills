@@ -1,108 +1,104 @@
-# MERN App - Run with Docker (Beginner Friendly)
+# 📦 How to Run This MERN App with Docker (For Collaborators & Users)
 
-This is a full stack MERN (MongoDB, Express, React, Node.js) project. You can run it easily using Docker without installing Node, npm, or MongoDB manually.
+This app uses Docker to simplify setup — no need to install Node.js, npm, or MongoDB on your system.
 
----
-
-## ✅ What You Need First
-
-1. **Install Docker**: [Get Docker](https://docs.docker.com/get-docker/)
-2. **Install Docker Compose** (usually comes with Docker Desktop)
+Just follow these steps and the entire project will run on your machine using containers.
 
 ---
 
-## 📁 Folder Setup
+## ✅ What You Need
 
-This project has:
-
-- `frontend/` — React app
-- `backend/` — Node.js/Express app
-- `docker-compose.yml` — file that runs everything together
+- **Docker**: Install it here → https://docs.docker.com/get-docker/
+- **Docker Compose**: Comes with Docker Desktop (just make sure it works by running `docker-compose -v`)
 
 ---
-## Steps to Run the App
-## ⚙️ Step 1: Setup Environment File
 
-Create a file named `.env` inside the `backend/` folder and paste this (fill in your own values):
+## 🚀 Getting Started
 
+### 1. **Clone the project**
+
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+cd YOUR_REPO_NAME
+```
+
+2. Create a .env file inside the backend/ folder
+This file is needed to store API keys, database URI, and other secrets.
 ```env
 PORT=8080
 DB=mongodb://your-mongo-uri
 GOOGLE_CLIENT_ID=xxx
 GOOGLE_CLIENT_SECRET=xxx
 GOOGLE_CALLBACK_URL=http://localhost:8080/auth/google/callback
-JWT_SECRET=your-secret
+JWT_SECRET=your-jwt-secret
 STRIPE_SECRET_KEY=your-stripe-key
 FRONTEND=http://localhost:3000
 NODE_ENV=development
 RAZORPAY_SECRET_KEY=your-razorpay-secret
 RAZORPAY_KEY_ID=your-razorpay-id
 EMAIL_USER=your-email
-EMAIL_PASS=your-email-password
+EMAIL_PASS=your-password
 CLOUDINARY_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_SECRET_API_KEY=your-secret-key
 ```
-⚠️ Don't share your .env file — it contains secrets.
+Don't share this file publicly. It contains private information.
 
-.
-
-###  Create a file named `docker-compose.yml` with the following content:
-
-```yaml
-version: '3'
-
-services:
-  backend:
-    image: raushangupta/skillhub-backend:latest
-    ports:
-      - "5000:5000"
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/yourdbname
-    depends_on:
-      - mongo
-
-  frontend:
-    image: raushangupta/skillhub-frontend:latest
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-
-  mongo:
-    image: mongo:6
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
-volumes:
-  mongo-data:
+3. Start the app using Docker Compose
+In the root folder (where docker-compose.yml is), run:
 ```bash
 docker-compose up --build
 ```
-🧪 Step 2: Run the App
-Open your terminal in the project folder (where docker-compose.yml is), and run:
+This command:
 
-This will:
+Builds the backend from ./backend
 
-Build and start the frontend on http://localhost:3000
+Builds the frontend from ./frontend
 
-Build and start the backend on http://localhost:8080
+Starts everything using the mern Docker network
 
-🛑 Stop the App
-Press Ctrl + C in the terminal, or run:
+🔗 Access the App
+Frontend: http://localhost:3000
+
+Backend API: http://localhost:8080
+
+🛑 Stopping the App
+When you're done, press Ctrl + C in the terminal, or run:
 ```bash
 docker-compose down
 ```
-🧠 Notes
-This setup does not include MongoDB inside Docker. You must connect to a cloud DB (like MongoDB Atlas).
+To clean up completely (including volumes):
+# 🧠 Extra Notes
+MongoDB is not included — this app connects to a remote MongoDB (e.g., MongoDB Atlas).
 
-Frontend uses Vite and will auto-refresh.
+You can edit code in backend/ and it will auto-reload (if using nodemon).
 
-Backend uses file sharing — you can edit code and restart backend.
+You don’t need to install Node, npm, or MongoDB — Docker handles everything.
 
+---
 
+## 📌 Docker Hub Images
+
+You can directly use the published Docker images from Docker Hub without building anything locally.
+
+- **Frontend:** [`raushangupta/skillhub-frontend`](https://hub.docker.com/r/raushangupta/skillhub-frontend)
+- **Backend:** [`raushangupta/skillhub-backend`](https://hub.docker.com/r/raushangupta/skillhub-backend)
+
+---
+
+## 🔥  Run Using Docker Hub Images
+
+Create a file called `docker-compose.prod.yml`:
+
+Then run:
+```bash
+docker-compose -f docker-compose.prod.yml up
+```
+ You’re done! Visit:
+
+Frontend: http://localhost:3000
+
+Backend: http://localhost:8080
 
 
 
