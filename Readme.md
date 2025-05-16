@@ -49,6 +49,10 @@ In the root folder (where docker-compose.yml is), run:
 ```bash
 docker-compose up --build
 ```
+or 
+```bash
+docker-compose --env-file ./backend/.env up --build
+```
 This command:
 
 Builds the backend from ./backend
