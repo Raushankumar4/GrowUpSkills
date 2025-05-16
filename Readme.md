@@ -90,6 +90,39 @@ You can directly use the published Docker images from Docker Hub without buildin
 
 Create a file called `docker-compose.prod.yml`:
 
+```yaml
+version: "3.8"
+
+services:
+  frontend:
+    image: raushangupta/skillhub-frontend:latest
+    container_name: skillhub-frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - mern
+    depends_on:
+      - backend
+
+  backend:
+    image: raushangupta/skillhub-backend:latest
+    container_name: skillhub-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB=your-mongodb-uri
+      - JWT_SECRET=your-secret
+      - FRONTEND=http://localhost:3000
+      # Add all other required variables
+    networks:
+      - mern
+
+networks:
+  mern:
+    driver: bridge
+```
+
 Then run:
 ```bash
 docker-compose -f docker-compose.prod.yml up
