@@ -1,15 +1,13 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../Sidbar/Sidebar";
-import { useState, useRef, useEffect } from "react";
-import { useUserContext } from "@/context/UserContext";
+import { useState } from "react";
 import { handleLogout } from "../Auth/logout";
-import Dashboard from "../Dashboard/DashBoard";
+import Dashboard from "../Dashboard/Dashboard";
 
 const AdminDashboard = () => {
   const location = useLocation();
   const heading = location.pathname.split("/").pop();
   const [isOpen, setIsOpen] = useState(true);
-  const { userData } = useUserContext();
   const navigate = useNavigate()
 
   const formattedHeading = heading
@@ -45,7 +43,6 @@ const AdminDashboard = () => {
               className="block z-50 w-full font-semibold text-left px-4 py-2 text-md hover:bg-gray-100"
               onClick={() => {
                 handleLogout(navigate);
-                setDropdownOpen(false);
               }}
             >
               Logout

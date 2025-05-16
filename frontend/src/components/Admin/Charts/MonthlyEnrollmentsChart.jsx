@@ -39,7 +39,7 @@ export default function MonthlyEnrollmentsChartByCourse() {
         setChartDatasets(datasets);
       }
     } catch (err) {
-      console.error("Error fetching enrollment data:", err);
+      console.log("Error fetching enrollment data:", err);
     }
   };
 

@@ -1,12 +1,12 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { useUserContext } from "./context/UserContext";
 import Navbar from "./components/Navbar/Navbar";
 import getCookie from "./hooks/getCookie";
-import UpdateProfile from "./components/User/UpdateProfile";
+import { useUserContext } from "./context/UserContext";
+
 
 function App() {
-  const { userData } = useUserContext();
+  const { fetchProfile } = useUserContext();
   const navigate = useNavigate();
   const cookie = getCookie("token")
 
@@ -15,6 +15,10 @@ function App() {
       navigate("/login");
     }
   }, []);
+
+  useEffect(() => {
+    fetchProfile()
+  }, [])
 
   return (
     <div>

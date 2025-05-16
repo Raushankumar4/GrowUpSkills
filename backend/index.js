@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND,
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
@@ -56,6 +56,10 @@ db().then(() => {
   app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
   });
+});
+
+app.get("/", (req, res) => {
+  res.send("Running!");
 });
 
 export default app;

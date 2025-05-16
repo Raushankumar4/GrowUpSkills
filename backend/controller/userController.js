@@ -1,6 +1,6 @@
 import userService from "../services/Userservices/userServices.js";
 import { sendEmail, sendResetPasswordEmail } from "../mail/SendMail.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 import { generateToken } from "../utils/generateToken.js";
 import { generateResetToken, verifyResetToken } from "../mail/resetToken.js";

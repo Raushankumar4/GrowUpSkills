@@ -40,7 +40,7 @@ export default function MonthlySignupsChart() {
         setSignupData(res.data);
       }
     } catch (err) {
-      console.error('Error fetching student signups:', err);
+      console.log('Error fetching student signups:', err);
     }
   };
 

@@ -78,7 +78,7 @@ export const paymentVerification = async (req, res) => {
     puchasedCourseVerified(user, payment.course);
 
     return res.redirect(
-      `${process.env.FRONTEND}/paymentSuccess?reference=${razorpay_payment_id}`
+      `${process.env.CLIENT_URL}/paymentSuccess?reference=${razorpay_payment_id}`
     );
   } else {
     payment.status = "failed";

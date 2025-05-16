@@ -29,8 +29,8 @@ const ModernAuthForm = () => {
   };
 
   const url = isLogin
-    ? "http://localhost:8080/api/v1/login"
-    : "http://localhost:8080/api/v1/register";
+    ? `${import.meta.env.VITE_SERVER}/api/v1/login`
+    : `${import.meta.env.VITE_SERVER}/api/v1/register`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,17 +43,11 @@ const ModernAuthForm = () => {
     const authData = isLogin ? filterData : userInput;
     try {
       const { data } = await axios.post(url, authData);
-      if (data && isLogin) {
+      if (isLogin && data) {
         removeCookie("token")
-        setCookie("token", JSON.stringify(data?.token))
-      }
-      localStorage.setItem("token", data?.token);
-      setAuthToken(data?.token)
-      setAuthType(data?.authType)
-      localStorage.setItem("authType", data?.authType)
-      await fetchProfile()
-      showSuccessToast(data?.message);
-      if (isLogin) {
+        setCookie("token", data?.token)
+        setAuthToken(data?.token)
+        showSuccessToast(data?.message || "Login Successfully!");
         navigate("/");
       } else {
         navigate(-1);
