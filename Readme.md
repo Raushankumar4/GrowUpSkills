@@ -1,49 +1,60 @@
-# MERN App Docker Guide
+# MERN App - Run with Docker (Beginner Friendly)
 
-## About Docker Hub Images
+This is a full stack MERN (MongoDB, Express, React, Node.js) project. You can run it easily using Docker without installing Node, npm, or MongoDB manually.
 
-This project’s backend and frontend Docker images are published on Docker Hub to simplify deployment and usage.
+---
 
-- **Backend Image:** `yourdockerhubusername/skillhub-backend`  
-  Contains the Node.js/Express backend server ready to run.
+## ✅ What You Need First
 
-- **Frontend Image:** `yourdockerhubusername/skillhub-frontend`  
-  Contains the built React frontend served by a static server.
+1. **Install Docker**: [Get Docker](https://docs.docker.com/get-docker/)
+2. **Install Docker Compose** (usually comes with Docker Desktop)
 
-You can pull these images directly from Docker Hub without building locally:
+---
 
-```bash
-docker pull yourdockerhubusername/skillhub-backend:latest
-docker pull yourdockerhubusername/skillhub-frontend:latest
+## 📁 Folder Setup
+
+This project has:
+
+- `frontend/` — React app
+- `backend/` — Node.js/Express app
+- `docker-compose.yml` — file that runs everything together
+
+---
+## Steps to Run the App
+## ⚙️ Step 1: Setup Environment File
+
+Create a file named `.env` inside the `backend/` folder and paste this (fill in your own values):
+
+```env
+PORT=8080
+DB=mongodb://your-mongo-uri
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=xxx
+GOOGLE_CALLBACK_URL=http://localhost:8080/auth/google/callback
+JWT_SECRET=your-secret
+STRIPE_SECRET_KEY=your-stripe-key
+FRONTEND=http://localhost:3000
+NODE_ENV=development
+RAZORPAY_SECRET_KEY=your-razorpay-secret
+RAZORPAY_KEY_ID=your-razorpay-id
+EMAIL_USER=your-email
+EMAIL_PASS=your-email-password
+CLOUDINARY_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_SECRET_API_KEY=your-secret-key
 ```
+⚠️ Don't share your .env file — it contains secrets.
 
-# Prerequisites
+.
 
-Docker installed: https://docs.docker.com/get-docker/
+###  Create a file named `docker-compose.yml` with the following content:
 
-Docker Compose installed: https://docs.docker.com/compose/install/
-
-Docker Hub account: https://hub.docker.com/
-
-# How to Use My Docker Images with Docker Compose
-
-# If you want to run the MERN app images I pushed to Docker Hub, just follow these steps:
-
-# 1. Make sure Docker and Docker Compose are installed.
-
-```bash
-Docker install
-Docker Compose install
-```
-
-# 2. Create a file named docker-compose.yml with this content
-
-```bash
+```yaml
 version: '3'
 
 services:
   backend:
-    image: yourdockerhubusername/skillhub-backend:latest
+    image: raushangupta/skillhub-backend:latest
     ports:
       - "5000:5000"
     environment:
@@ -52,7 +63,7 @@ services:
       - mongo
 
   frontend:
-    image: yourdockerhubusername/skillhub-frontend:latest
+    image: raushangupta/skillhub-frontend:latest
     ports:
       - "3000:3000"
     depends_on:
@@ -67,68 +78,31 @@ services:
 
 volumes:
   mongo-data:
-```
-
-Replace yourdockerhubusername with my actual Docker Hub username
-
-# 3. Run this command in the folder with docker-compose.yml:
-
 ```bash
-docker-compose up
+docker-compose up --build
 ```
+🧪 Step 2: Run the App
+Open your terminal in the project folder (where docker-compose.yml is), and run:
 
-# 4. Access the app at:
+This will:
 
-Frontend: http://localhost:3000
+Build and start the frontend on http://localhost:3000
 
-Backend API: http://localhost:5000
+Build and start the backend on http://localhost:8080
 
-That’s it! Docker Compose will:
-
-Pull the images from Docker Hub
-
-Start MongoDB container
-
-Start backend and frontend containers connected together
-
-# ----PUSHING IMAGES ON DOCKER HUB GUIDE----
-
-# Step 1: Build Docker images locally
-
-Build the backend image:
-
+🛑 Stop the App
+Press Ctrl + C in the terminal, or run:
 ```bash
-docker build -t skillhub-backend ./backend
+docker-compose down
 ```
+🧠 Notes
+This setup does not include MongoDB inside Docker. You must connect to a cloud DB (like MongoDB Atlas).
 
-Build the frontend image:
+Frontend uses Vite and will auto-refresh.
 
-```bash
-docker build -t skillhub-frontend ./frontend
-```
+Backend uses file sharing — you can edit code and restart backend.
 
-# Step 2: Tag images with your Docker Hub username
 
-Replace yourdockerhubusername with your Docker Hub username.
 
-```bash
-docker tag skillhub-backend yourdockerhubusername/skillhub-backend:latest
-docker tag skillhub-frontend yourdockerhubusername/skillhub-frontend:latest
-```
 
-# Step 3: Log in to Docker Hub
 
-```bash
-docker login
-```
-
-Enter your Docker Hub username and password when prompted.
-
-# Step 4: Push images to Docker Hub
-
-```bash
-docker push yourdockerhubusername/skillhub-backend:latest
-docker push yourdockerhubusername/skillhub-frontend:latest
-```
-
-# Step 5. Check Your DockerHub
