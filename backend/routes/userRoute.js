@@ -10,7 +10,7 @@ import {
   resetPassword,
   UpdateProfile,
 } from "../controller/userController.js";
-import { isAdmin, isAuthenticated, isLocalLogin } from "../middleware/auth.js";
+import { isAdmin, isAuthenticated } from "../middleware/auth.js";
 import {
   addLectureProgress,
   createUserCourse,
@@ -36,6 +36,11 @@ import {
   totalEnrollStudent,
 } from "../controller/AdminController.js";
 import videoUpload from "../middleware/multer.js";
+import {
+  createQuiz,
+  examsubmission,
+  getCourseQuiz,
+} from "../controller/examController.js";
 
 const router = Router();
 
@@ -82,6 +87,9 @@ router
   .put(isAuthenticated, videoUpload.single("videoUrl"), updateLecture);
 router.route("/:courseId").get(isAuthenticated, getProgress);
 router.route("/lectures/:cousreId").get(isAuthenticated, getCourseLectures);
+router.route("/create-course-quiz/quizzes").post(isAuthenticated, createQuiz);
+router.route("/quizzes/:quizId/submit").post(isAuthenticated, examsubmission);
+router.route("/course/quiz").get(isAuthenticated, getCourseQuiz);
 
 router
   .route("/delete-lecture/:courseId")

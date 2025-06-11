@@ -37,55 +37,57 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Dashboard Overview</h2>
+    <>
+      <div >
+        <h2 className="text-2xl font-bold mb-4">Dashboard Overview</h2>
 
-      {/* Metrics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <MetricCard label="Total Courses" value={metrics.courses} icon={<FaBookOpen className="h-6 w-6 text-blue-500" />} />
-        <MetricCard label="Total Students" value={metrics.students} icon={<FaUsers className="h-6 w-6 text-green-500" />} />
-        <MetricCard label="Instructors" value={metrics.instructors} icon={<FaChalkboardTeacher className="h-6 w-6 text-yellow-500" />} />
-        <MetricCard label="Revenue" value={metrics.revenue} icon={<FaDollarSign className="h-6 w-6 text-red-500" />} />
+        {/* Metrics Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          <MetricCard label="Total Courses" value={metrics.courses} icon={<FaBookOpen className="h-6 w-6 text-blue-500" />} />
+          <MetricCard label="Total Students" value={metrics.students} icon={<FaUsers className="h-6 w-6 text-green-500" />} />
+          <MetricCard label="Instructors" value={metrics.instructors} icon={<FaChalkboardTeacher className="h-6 w-6 text-yellow-500" />} />
+          <MetricCard label="Revenue" value={metrics.revenue} icon={<FaDollarSign className="h-6 w-6 text-red-500" />} />
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="shadow-lg rounded-lg p-4 bg-white">
+            <MonthlySignupsChart />
+          </div>
+          <div className="shadow-lg rounded-lg p-4 bg-white">
+            <MonthlyEnrollmentsChart />
+          </div>
+        </div>
+
+        {/* Recent Courses */}
+        <Section title="📘 Recent Courses">
+          <Table data={recentCourses} columns={['Course Title', 'Instructor', 'Date']} />
+        </Section>
+
+        {/* Recent Activities */}
+        <Section title="🕒 Recent Activities">
+          <ul className="space-y-2">
+            {recentActivities.map((activity, index) => (
+              <li key={index} className="flex justify-between text-gray-700">
+                <span>{activity.user} {activity.action}</span>
+                <span className="text-sm text-gray-500">{activity.time}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+
+        {/* Notifications */}
+        <Section title="🔔 Notifications">
+          <NotificationPanel notifications={notifications} />
+        </Section>
       </div>
-
-      {/* Charts Placeholder */}
-
-      <div className="grid md:grid-cols-2  shadow rounded-lg p-4  items-center gap-4 text-gray-600">
-        <MonthlySignupsChart />
-        <div className='mx-2'>  <MonthlyEnrollmentsChart /></div>
-
-      </div>
-
-      {/* Recent Courses */}
-      <Section title="📘 Recent Courses">
-        <Table data={recentCourses} columns={['Course Title', 'Instructor', 'Date']} />
-      </Section>
-
-      {/* Recent Activities */}
-      <Section title="🕒 Recent Activities">
-        <ul className="space-y-2">
-          {recentActivities.map((activity, index) => (
-            <li key={index} className="flex justify-between text-gray-700">
-              <span>{activity.user} {activity.action}</span>
-              <span className="text-sm text-gray-500">{activity.time}</span>
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      {/* Notifications */}
-      <Section title="🔔 Notifications">
-        <NotificationPanel notifications={notifications} />
-      </Section>
-
-
-    </div>
+    </>
   );
 }
 
 function MetricCard({ label, value, icon }) {
   return (
-    <div className="bg-white shadow rounded-lg p-4 flex items-center space-x-4">
+    <div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
       <div className="text-2xl">{icon}</div>
       <div>
         <p className="text-sm text-gray-500">{label}</p>
@@ -106,7 +108,7 @@ function Section({ title, children }) {
 
 function Table({ data, columns }) {
   return (
-    <div className="overflow-x-auto bg-white shadow rounded-lg">
+    <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
       <table className="min-w-full">
         <thead>
           <tr className="border-b">
@@ -131,7 +133,7 @@ function Table({ data, columns }) {
 
 function NotificationPanel({ notifications }) {
   return (
-    <div className="bg-white shadow rounded-lg p-4">
+    <div className="bg-white shadow-lg rounded-lg p-4">
       <ul className="space-y-2">
         {notifications.map((note, index) => (
           <li key={index} className="flex justify-between text-gray-700">

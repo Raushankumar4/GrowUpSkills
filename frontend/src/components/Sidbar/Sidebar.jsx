@@ -18,7 +18,7 @@ import {
   FaDollarSign,
 } from "react-icons/fa";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useUserContext } from "@/context/UserContext";
 
@@ -26,8 +26,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate()
 
   const { userData } = useUserContext();
+  console.log(window.innerWidth);
+
 
   useEffect(() => {
     const checkScreen = () => {
@@ -47,26 +50,23 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
   const menuItems = [
     { name: "Dashboard", icon: <FaTachometerAlt />, path: "/dashboard" },
-    { name: "Announcements", icon: <FaBullhorn />, path: "/announcements" },
-    { name: "My Courses", icon: <FaBook />, path: "/courses" },
-    { name: "Calendar", icon: <FaCalendarAlt />, path: "/calendar" },
-    { name: "Exams", icon: <FaFileAlt />, path: "/exams" },
-    { name: "Certificates", icon: <FaCertificate />, path: "/certificates" },
-    { name: "My Purchases", icon: <FaShoppingCart />, path: "/purchases" },
-    { name: "Profile", icon: <FaUser />, path: "/profile" },
+    { name: "Announcements", icon: <FaBullhorn />, path: "/dashboard/announcements" },
+    { name: "My Courses", icon: <FaBook />, path: "/dashboard/course" },
+    { name: "Exams", icon: <FaFileAlt />, path: "/dashboard/exams" },
+    { name: "Certificates", icon: <FaCertificate />, path: "/dashboard/certificates" },
+    { name: "My Purchases", icon: <FaShoppingCart />, path: "/dashboard/purchase" },
+    { name: "Settings", icon: <FaCogs />, path: "/dashboard/settings" },
   ];
 
   const adminMenuItems = [
     { name: "Dashboard", icon: <FaTachometerAlt />, path: "/dashboard" },
     { name: "User Management", icon: <FaUsersCog />, path: "/dashboard/user-management" },
-    { name: "Reports", icon: <FaChartBar />, path: "/dashboard/create-course" },
+    { name: "Add Course", icon: <FaChartBar />, path: "/dashboard/create-course" },
     { name: "Manage Courses", icon: <FaClipboardList />, path: "/dashboard/manage-courses" },
     { name: "Analytics", icon: <FaDatabase />, path: "/admin/analytics" },
-    { name: "Content Management", icon: <FaBook />, path: "/admin/content-management" },
     { name: "Payment History", icon: <FaCreditCard />, path: "/admin/payment-history" },
     { name: "Revenue", icon: <FaDollarSign />, path: "/admin/revenue" },
-    { name: "Settings", icon: <FaCogs />, path: "/admin/settings" },
-    { name: "Profile", icon: <FaUser />, path: "/profile" },
+    { name: "Settings", icon: <FaCogs />, path: "/dashboard/settings" },
   ];
 
 
@@ -95,6 +95,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <Link
               key={item.name}
               to={item.path}
+              onClick={() => setIsOpen(false)}
               className={`flex  items-center space-x-3 cursor-pointer px-3 py-3 rounded-lg transition-all duration-200 ${item.path === "/dashboard"
                 ? pathname === item.path
                 : pathname.startsWith(item.path)
@@ -106,6 +107,21 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               <span className={`${!isOpen && "hidden"} truncate`}>{item.name}</span>
             </Link>
           ))}
+          {/* Profile Section */}
+          <div onClick={() => navigate("/dashboard/profile")} className="flex items-center space-x-3 cursor-pointer  py-2 px-1 rounded-lg hover:bg-purple-100 transition-all">
+            <img
+              className="w-10 h-10 rounded-full object-cover"
+              src={userData?.avatar || userData?.photo}
+              alt="profile"
+            />
+            {isOpen && (
+              <div className="truncate">
+                <h1 className="text-sm font-semibold truncate">{userData?.username || userData?.displayName}</h1>
+                <p className="text-xs text-gray-500 truncate">{userData?.email}</p>
+              </div>
+            )}
+          </div>
+
         </ul>
       )
       }
@@ -119,6 +135,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <ul className="space-y-2 mt-2">
               {adminMenuItems.map((item) => (
                 <Link
+                  onClick={() => setIsOpen(false)}
                   key={item.name}
                   to={item.path}
                   className={`flex  items-center space-x-3 cursor-pointer px-3 py-3 rounded-lg transition-all duration-200 ${item.path === "/dashboard"
@@ -132,6 +149,21 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                   <span className={`${!isOpen && "hidden"} truncate`}>{item.name}</span>
                 </Link>
               ))}
+              {/* Profile Section */}
+              <div onClick={() => navigate("/dashboard/profile")} className="flex cursor-pointer items-center space-x-3 p-2 rounded-lg hover:bg-purple-100 transition-all">
+                <img
+                  className="w-10 h-10 rounded-full object-cover"
+                  src={userData?.avatar || userData?.photo}
+                  alt="profile"
+                />
+                {isOpen && (
+                  <div className="truncate">
+                    <h1 className="text-sm font-semibold truncate">{userData?.username || userData?.displayName}</h1>
+                    <p className="text-xs text-gray-500 truncate">{userData?.email}</p>
+                  </div>
+                )}
+              </div>
+
             </ul>
           </>
         )

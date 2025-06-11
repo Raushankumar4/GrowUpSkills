@@ -11,9 +11,8 @@ export const generateToken = (res, user) => {
       { expiresIn: "4d" }
     );
 
-    // Store token in an HTTP-only, Secure cookie
     res.cookie("token", token, {
-      httpOnly: false, // Prevents client-side JavaScript access (XSS protection)
+      httpOnly: false,
       secure: false,
       sameSite: "strict", // Prevents CSRF attacks
       path: "/", // Root path

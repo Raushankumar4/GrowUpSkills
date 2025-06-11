@@ -2,7 +2,7 @@ import React from "react";
 import DasboardContent from "./DasboardContent";
 import Announcement from "./Announcement";
 import MyCourse from "./MyCourse";
-import MyPurchase from "../User/MyPurchase";
+import MyPurchase from "../User/";
 import MyCertificates from "../User/MyCertificates";
 import Exam from "../User/Exam";
 

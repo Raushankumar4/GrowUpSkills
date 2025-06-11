@@ -1,5 +1,4 @@
-import CourseTable from "@/components/Admin/ManageCourse/CourseTable";
-import CourseView from "@/components/Admin/ManageCourse/CourseView";
+
 import ManageCourses from "@/components/Admin/ManageCourse/ManageCourses";
 import UserManagement from "@/components/Admin/ManageCourse/UserManagment";
 import ForgotPassword from "@/components/Auth/ForgotPassword";
@@ -8,13 +7,22 @@ import ResetPassword from "@/components/Auth/ResetPassword";
 import ErrorBoundary from "@/components/Error/ErrorBoundary";
 import RouterError from "@/components/Error/RouterError";
 import Loading from "@/components/Loading/Loading";
+import Announcement from "@/components/Sidbar/Announcement";
+import MyCourses from "@/components/Sidbar/MyCourse";
+import Calendar from "@/components/User/Calendar";
+import Exam from "@/components/User/Exam";
+import MyCertificates from "@/components/User/MyCertificates";
+import MyPurchases from "@/components/User/MyPurchases";
+import StudentSettings from "@/components/User/StudentSettings";
+import UpdateProfile from "@/components/User/UpdateProfile";
 import React, { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
+import UpdateCourse from "@/components/Admin/ManageCourse/UpdateCourse";
+import Layout from "@/components/Layout/Layout";
+import CoursePage from "@/components/Layout/CoursePage";
 
 const App = lazy(() => import("../App"));
-const Profile = lazy(() => import("../components/User/Profile"));
 const PurchaseSuccess = lazy(() => import("../components/Course/PurchaseSuccess"));
-const AdminDashboard = lazy(() => import("../components/Admin/AdminDashboard"));
 const PaymentSuccess = lazy(() => import("../razorpay/PaymentSuccess"));
 const SearchCourse = lazy(() => import("../components/Course/SearchCourse"));
 const CreateCourse = lazy(() => import("@/components/Admin/CreateCoures/CreateCourse"));
@@ -35,8 +43,8 @@ export const router = createBrowserRouter([
     ),
     errorElement: <RouterError />,
     children: [
-      { path: "/profile", element: <Profile /> },
-      { path: "course/:courseId", element: <CourseDetails /> },
+
+      { path: "course/:courseId", element: <CoursePage /> },
       { path: "purchase-success", element: <PurchaseSuccess /> },
       { path: "/courses/search", element: <SearchCourse /> },
       { path: "courses", element: <CourseCard /> },
@@ -56,15 +64,25 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <AdminDashboard />
+      <Suspense fallback={<Loading />}>
+        <Layout />
       </Suspense>
     ),
     children: [
       { path: "create-course", element: <CreateCourse /> },
       { path: "manage-courses", element: <ManageCourses /> },
       { path: "user-management", element: <UserManagement /> },
-      { path: "manage-courses/courses/:courseId", element: <CourseView /> }
+      { path: "manage-courses/courses/:courseId", element: <CoursePage /> },
+      { path: "manage-courses/update/:id", element: <UpdateCourse /> },
+      // Student Dashboard
+      { path: "purchase", element: <MyPurchases /> },
+      { path: "announcements", element: <Announcement /> },
+      { path: "course", element: <MyCourses /> },
+      { path: "profile", element: <UpdateProfile /> },
+      { path: "certificates", element: <MyCertificates /> },
+      { path: "exams", element: <Exam /> },
+      { path: "calendar", element: <Calendar /> },
+      { path: "settings", element: <StudentSettings /> },
 
     ],
   },

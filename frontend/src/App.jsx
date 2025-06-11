@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import Navbar from "./components/Navbar/Navbar";
 import getCookie from "./hooks/getCookie";
 import { useUserContext } from "./context/UserContext";
+import Layout from "./components/Layout/Layout";
+import CreateExam from "./components/Admin/Exam/CreateExam";
 
 
 function App() {
@@ -22,7 +24,8 @@ function App() {
 
   return (
     <div>
-      <Navbar />
+
+      <CreateExam />
       <Outlet />
     </div>
   );

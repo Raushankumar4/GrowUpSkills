@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axiosInstance from "../Axios/AxiosInstance";
 import getCookie from "@/hooks/getCookie";
-import { showSuccessToast } from "@/utils/ToastSimple";
-import axios from "axios";
+
 
 const UserContext = createContext();
 
@@ -15,17 +14,7 @@ export const UserProvider = ({ children }) => {
   const [course, setCourse] = useState({});
   const [lectures, setLectures] = useState([]);
 
-  const authType = localStorage.getItem("authType")
-
-  console.log(import.meta.env.VITE_SERVER);
-
-
-  // const url =
-  //   authType === "local"
-  //     ? "profile"
-  //     : authType === "google"
-  //       ? `${import.meta.env.VITE_SERVER}/auth/user`
-  //       : "profile";
+  const coookieToken = getCookie("token")
 
   const fetchProfile = async () => {
     setLoadingUser(true)
@@ -40,6 +29,11 @@ export const UserProvider = ({ children }) => {
       setLoadingUser(false);
     }
   };
+  useEffect(() => {
+    if (!coookieToken) return
+    fetchProfile()
+  }, [coookieToken])
+
 
 
   const getCourses = async () => {

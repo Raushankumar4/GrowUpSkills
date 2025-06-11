@@ -134,7 +134,7 @@ const CreateCourse = () => {
   };
 
   return (
-    <div className="max-w-7xl  overflow-y-auto mx-auto px-10 py-10 bg-[#FFFFFF]">
+    <div className="p-10 bg-[#FFFFFF]">
 
 
       <div className="flex items-center justify-between mb-6">

@@ -1,27 +1,108 @@
-import React, { useState } from "react";
+import axiosInstance from "@/Axios/AxiosInstance";
+import { useUserContext } from "@/context/UserContext";
+import { showErrorToast, showSuccessToast } from "@/utils/ToastSimple";
+import React, { useRef, useState, useEffect } from "react";
 
 export default function UpdateProfile() {
+  const { userData, fetchProfile } = useUserContext();
+  const avatarRef = useRef();
+
   const [formData, setFormData] = useState({
-    name: "Raushan Gupta Unofficial",
-    email: "raushanguptaunofficial@gmail.com",
-    mobile: "9258423983",
-    college: "subharti engineering college meerut",
-    gender: "male",
-    dob: "2000-01-01",
+    username: "",
+    email: "",
+    mobile: "",
+    college: "",
+    gender: "",
+    dob: "",
     bio: "",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    avatar: null,
   });
 
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [hasError, setHasError] = useState(false); 
+
+  useEffect(() => {
+    if (userData) {
+      const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toISOString().split("T")[0];
+      };
+
+      setFormData({
+        username: userData.username || userData?.displayName || "",
+        email: userData.email || "",
+        mobile: userData.mobile || "",
+        college: userData.college || "",
+        gender: userData.gender || "",
+        dob: formatDate(userData.dob),
+        bio: userData.bio || "",
+        avatar: null,
+      });
+
+      setAvatarPreview(userData?.avatar || "");
+    }
+  }, [userData]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, files } = e.target;
+    setProgress(0);
+
+    if (name === "avatar" && files.length > 0) {
+      const file = files[0];
+      setFormData((prev) => ({ ...prev, avatar: file }));
+      setAvatarPreview(URL.createObjectURL(file));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleSave = () => {
-    // Perform validation, API call, etc.
-    console.log("Saved Data:", formData);
+  const handleClick = () => {
+    avatarRef.current.click();
+  };
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    setHasError(false);
+
+    const payload = new FormData();
+
+    if (formData.avatar) {
+      payload.append("avatar", formData.avatar);
+    }
+
+    payload.append("username", formData.username);
+    payload.append("dob", formData.dob);
+    payload.append("college", formData.college);
+    payload.append("mobile", formData.mobile);
+    payload.append("bio", formData.bio);
+    payload.append("email", formData.email);
+    payload.append("gender", formData.gender);
+
+    try {
+      const { data } = await axiosInstance.put("update-profile", payload, {
+        onUploadProgress: (e) => {
+          const percent = Math.round((e.loaded * 100) / e.total);
+          setProgress(percent);
+          if (percent === 100) {
+            setTimeout(() => {
+              setProgress(0);
+            }, 1000);
+          }
+        },
+      });
+
+      await fetchProfile();
+      showSuccessToast(data?.message || "Profile updated successfully!");
+      setIsLoading(false);
+      setHasError(false);
+    } catch (error) {
+      setIsLoading(false);
+      setHasError(true);
+      showErrorToast(error?.response?.data?.message || "Profile update failed");
+    }
   };
 
   return (
@@ -30,26 +111,37 @@ export default function UpdateProfile() {
         {/* Avatar */}
         <div className="relative">
           <img
-            src="https://i.pinimg.com/originals/8c/2b/08/8c2b08fd3b64011234b011b408cf6a6c.jpg"
+            src={avatarPreview}
             alt="avatar"
-            className="w-32 h-32 rounded-full object-cover border-4  shadow"
+            className="w-32 h-32 rounded-full object-cover border-4 shadow"
           />
-          <div className="absolute bottom-0 right-0 bg-gray-300 p-2 rounded-full cursor-pointer">
+          <div
+            onClick={handleClick}
+            className="absolute bottom-0 right-0 bg-gray-300 p-2 rounded-full cursor-pointer"
+          >
             <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l7-7a2.828 2.828 0 10-4-4l-7 7v3z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 21H4a1 1 0 01-1-1v-6a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1z" />
             </svg>
           </div>
+          <input
+            onChange={handleChange}
+            name="avatar"
+            ref={avatarRef}
+            className="hidden"
+            type="file"
+            accept="image/*"
+          />
         </div>
 
         {/* Form */}
-        <div className="mt-8 w-full p-6 rounded-xl  space-y-6">
-          {/* Name */}
+        <div className="mt-8 w-full p-6 rounded-xl space-y-6">
+          {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Name *</label>
             <input
-              name="name"
-              value={formData.name}
+              name="username"
+              value={formData.username}
               onChange={handleChange}
               className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
               type="text"
@@ -104,43 +196,23 @@ export default function UpdateProfile() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
             <div className="flex items-center gap-6">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="male"
-                  checked={formData.gender === "male"}
-                  onChange={handleChange}
-                  className="text-blue-600"
-                />
-                <span className="ml-2">Male</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="female"
-                  checked={formData.gender === "female"}
-                  onChange={handleChange}
-                  className="text-pink-500"
-                />
-                <span className="ml-2">Female</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="other"
-                  checked={formData.gender === "other"}
-                  onChange={handleChange}
-                  className="text-gray-600"
-                />
-                <span className="ml-2">Other</span>
-              </label>
+              {["male", "female", "other"].map((g) => (
+                <label key={g} className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={g}
+                    checked={formData.gender === g}
+                    onChange={handleChange}
+                    className="text-blue-600"
+                  />
+                  <span className="ml-2 capitalize">{g}</span>
+                </label>
+              ))}
             </div>
           </div>
 
-          {/* Date of Birth */}
+          {/* DOB */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
             <input
@@ -165,47 +237,24 @@ export default function UpdateProfile() {
             ></textarea>
           </div>
 
-          {/* Password Update */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Current Password</label>
-              <input
-                name="currentPassword"
-                value={formData.currentPassword}
-                onChange={handleChange}
-                type="password"
-                className="w-full mt-1 border border-gray-300 rounded px-3 py-2"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">New Password</label>
-              <input
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleChange}
-                type="password"
-                className="w-full mt-1 border border-gray-300 rounded px-3 py-2"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
-              <input
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                type="password"
-                className="w-full mt-1 border border-gray-300 rounded px-3 py-2"
-              />
-            </div>
-          </div>
-
-          {/* Save Button */}
-          <div className="text-right">
+          {/* Save / Retry Button */}
+          <div className="text-right mt-4">
+            {progress > 0 && (
+              <div className="w-full bg-gray-200 rounded-full h-4 mb-2 overflow-hidden relative">
+                <div
+                  className="bg-indigo-600 h-4 transition-all duration-300 text-white text-xs flex items-center justify-center"
+                  style={{ width: `${progress}%` }}
+                >
+                  <span className="px-1">{progress}%</span>
+                </div>
+              </div>
+            )}
             <button
+              disabled={isLoading}
               onClick={handleSave}
-              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition"
+              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition disabled:opacity-50"
             >
-              Save
+              {isLoading ? "Updating..." : hasError ? "Retry" : "Save"}
             </button>
           </div>
         </div>

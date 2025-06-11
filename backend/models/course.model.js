@@ -16,24 +16,21 @@ const CourseSchema = new Schema(
     instructor: String,
     overview: [String],
 
-    modules: [
+    quizzes: [
       {
-        quizzes: [
+        title: String,
+        questions: [
           {
-            title: String,
-            questions: [
-              {
-                questionText: String,
-                options: [String],
-                correctAnswer: String,
-              },
-            ],
+            questionText: String,
+            options: [String],
+            correctAnswer: String,
           },
         ],
       },
     ],
 
     duration: { type: String },
+    quizzes: [{ type: Schema.Types.ObjectId, ref: "Quiz" }],
     price: { type: Number, default: 0 },
     ratings: [
       {

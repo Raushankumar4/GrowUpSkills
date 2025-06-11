@@ -93,7 +93,7 @@ export const getProfile = async (req, res) => {
 
 export const UpdateProfile = async (req, res) => {
   try {
-    const { username, bio, college, gender, mobile } = req.body;
+    const { username, bio, college, gender, mobile, dob } = req.body;
     const userId = req.user;
     const user = await User.findById(userId);
     if (!user) {
@@ -119,6 +119,7 @@ export const UpdateProfile = async (req, res) => {
         mobile,
         avatar,
         avatarPublicId,
+        dob,
       },
       { new: true }
     );

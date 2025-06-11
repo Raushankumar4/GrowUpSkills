@@ -1,11 +1,13 @@
 import { Payment } from "../models/PaymentSchema.js";
 import User from "../models/user.model.js";
 
+
+
 export const getUserPayments = async (req, res) => {
   try {
     const userId = req.user;
     const payments = await Payment.find({ user: userId })
-      .populate("course", "title price")
+      .populate("course")
       .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, payments });
