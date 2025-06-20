@@ -4,13 +4,17 @@ import { FaEye, FaEdit, FaTrashAlt, FaEllipsisV } from "react-icons/fa";
 import { useUserContext } from "@/context/UserContext";
 import { useDeleteCourse } from "@/hooks/useDeleteCourse";
 import { useHandleDeleteWithUndo } from "@/hooks/useHandleDeleteWithUndo";
+import ConfirmModal from "./ConfirmModal";
 
 const ManageCourses = () => {
   const [search, setSearch] = useState("");
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { courses: allCourses, getCourses } = useUserContext();
   const deleteCourse = useDeleteCourse();
   const navigate = useNavigate();
-  const [openMenuId, setOpenMenuId] = useState(null); // For dropdown menu
 
   const {
     items: courses,
@@ -36,8 +40,22 @@ const ManageCourses = () => {
     setOpenMenuId((prev) => (prev === id ? null : id));
   };
 
+  const handleConfirmDelete = () => {
+    if (selectedCourse) {
+      handleDelete(selectedCourse);
+      setIsModalOpen(false);
+      setSelectedCourse(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsModalOpen(false);
+    setSelectedCourse(null);
+  };
+
   return (
     <div className="min-h-screen p-6">
+      {/* Header */}
       <header className="sticky top-0 z-10 p-4 mb-6 flex justify-between items-center bg-white">
         <h1 className="text-2xl font-bold text-gray-800">Courses</h1>
         <input
@@ -61,7 +79,7 @@ const ManageCourses = () => {
 
       <main className="max-w-7xl mx-auto mt-8">
         {courses?.length === 0 ? (
-          <div className="text-gray-500 text-center">Loading courses...</div>
+          <div className="text-gray-500 text-center">No Courses yet.</div>
         ) : filteredCourses?.length === 0 ? (
           <div className="text-gray-500 text-center">No courses found.</div>
         ) : (
@@ -83,13 +101,13 @@ const ManageCourses = () => {
                     <tr key={course._id} className="border-t border-gray-200">
                       <td className="px-4 py-3">
                         <img
-                          src={course.image || "/placeholder.png"}
+                          src={course.imageUrl || "/placeholder.png"}
                           alt={course.title}
                           className="w-20 h-12 object-cover rounded"
                         />
                       </td>
                       <td className="px-4 py-3 font-medium">{course.title}</td>
-                      <td className="px-4 py-3">${course.price || "0.00"}</td>
+                      <td className="px-4 py-3">₹{course.price || "0.00"}</td>
                       <td className="px-4 py-3">{course.instructor}</td>
                       <td className="px-4 py-3 relative">
                         <button
@@ -115,13 +133,8 @@ const ManageCourses = () => {
                             </button>
                             <button
                               onClick={() => {
-                                if (
-                                  confirm(
-                                    "Warning: Deleting this course will remove all associated lectures and users who purchased it. This action can be undone. Do you wish to proceed?"
-                                  )
-                                ) {
-                                  handleDelete(course);
-                                }
+                                setSelectedCourse(course);
+                                setIsModalOpen(true);
                               }}
                               className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-600"
                             >
@@ -144,7 +157,7 @@ const ManageCourses = () => {
                   className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm"
                 >
                   <img
-                    src={course.image || "/placeholder.png"}
+                    src={course?.imageUrl || "/placeholder.png"}
                     alt={course.title}
                     className="w-full h-40 object-cover rounded-md mb-4"
                   />
@@ -158,7 +171,7 @@ const ManageCourses = () => {
                     Instructor: {course.instructor}
                   </p>
                   <p className="text-sm text-gray-700 font-semibold mb-4">
-                    ${course.price || "0.00"}
+                    ₹{course.price || "0.00"}
                   </p>
                   <div className="flex justify-between text-sm">
                     <Link
@@ -175,13 +188,8 @@ const ManageCourses = () => {
                     </button>
                     <button
                       onClick={() => {
-                        if (
-                          confirm(
-                            "Deleting this course will remove all associated data. Continue?"
-                          )
-                        ) {
-                          handleDelete(course);
-                        }
+                        setSelectedCourse(course);
+                        setIsModalOpen(true);
                       }}
                       className="text-red-600 hover:text-red-800 font-medium flex items-center"
                     >
@@ -194,6 +202,17 @@ const ManageCourses = () => {
           </>
         )}
       </main>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={isModalOpen}
+        title="Delete Course"
+        message={`Are you sure you want to delete "${selectedCourse?.title}"? This will remove all lectures and enrolled users.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 };

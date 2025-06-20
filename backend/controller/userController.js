@@ -1,5 +1,9 @@
 import userService from "../services/Userservices/userServices.js";
-import { sendEmail, sendResetPasswordEmail } from "../mail/SendMail.js";
+import {
+  sendEmail,
+  sendOTPEmail,
+  sendResetPasswordEmail,
+} from "../mail/SendMail.js";
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 import { generateToken } from "../utils/generateToken.js";
@@ -8,6 +12,10 @@ import cloudinary from "cloudinary";
 import dotenv from "dotenv";
 import { handleResponse } from "../utils/handleResponse.js";
 dotenv.config();
+
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit
+};
 
 export const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
@@ -26,25 +34,93 @@ export const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const otp = generateOTP();
+    const otpExpiry = Date.now() + 10 * 60 * 1000;
+
     const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
       authType: "local",
+      otp,
+      otpExpiry,
+      isVerifiedEmail: false,
     });
+    sendOTPEmail(email, otp);
     generateToken(res, newUser);
 
     res.status(201).json({
-      message: "Registered successfully",
-      user: {
-        id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-        role: newUser.role,
-      },
+      message:
+        "Registered successfully. Please verify your email with the OTP sent.",
+      userId: newUser._id,
     });
   } catch (error) {
     console.error("Registration error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const verifyOTP = async (req, res) => {
+  const { userId, otp } = req.body;
+
+  if (!userId || !otp) {
+    return res.status(400).json({ message: "User ID and OTP are required" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.isVerifiedEmail) {
+      return res.status(400).json({ message: "Email is already verified" });
+    }
+
+    if (user.otp !== otp || user.otpExpiry < Date.now()) {
+      return res.status(400).json({ message: "OTP is invalid or expired" });
+    }
+
+    user.isVerifiedEmail = true;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully" });
+  } catch (error) {
+    console.error("OTP verification error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const resendOTP = async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) return res.status(400).json({ message: "User ID is required" });
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.isVerifiedEmail) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const otpExpiry = Date.now() + 10 * 60 * 1000;
+
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    await user.save();
+
+    await sendEmail(user.email, otp);
+
+    res.status(200).json({ message: "OTP resent successfully" });
+  } catch (error) {
+    console.error("Resend OTP error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

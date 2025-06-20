@@ -1,22 +1,49 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const VerifyOtp = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const userId = location.state?.userId;
+
   const [otp, setOtp] = useState('');
   const [verified, setVerified] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  if (!userId) {
+    return <p className="text-center mt-10 text-red-500">No user info found. Please register first.</p>;
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Replace with real OTP verification logic
-    if (otp === '123456') {
-      setVerified(true);
-    } else {
-      alert('Invalid OTP');
+    setError('');
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_SERVER}/api/v1/verify-otp`, {
+        userId,
+        otp,
+      });
+
+      if (response.data.message === 'Email verified successfully') {
+        setVerified(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to verify OTP');
     }
   };
 
-  const handleResend = () => {
-    alert('OTP resent to your email or phone.');
-    // Trigger resend OTP API here
+  const handleResend = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_SERVER}/api/v1/resend-otp`, { userId });
+      alert('OTP resent to your email or phone.');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to resend OTP');
+    }
   };
 
   return (
@@ -40,7 +67,7 @@ const VerifyOtp = () => {
             <div className="text-center text-green-600 text-sm">
               ✅ OTP Verified Successfully!
               <div className="mt-4">
-                <a href="/" className="text-indigo-600 hover:underline font-medium">
+                <a href="/login" className="text-indigo-600 hover:underline font-medium">
                   Continue to Login
                 </a>
               </div>
@@ -56,6 +83,7 @@ const VerifyOtp = () => {
                 className="w-full text-center tracking-widest font-mono text-lg px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 required
               />
+              {error && <p className="text-red-500 text-center">{error}</p>}
 
               <button
                 type="submit"

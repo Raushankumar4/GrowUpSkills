@@ -16,6 +16,8 @@ import {
   FaDatabase,
   FaCreditCard,
   FaDollarSign,
+  FaBookMedical,
+  FaPenFancy
 } from "react-icons/fa";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -29,7 +31,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   const navigate = useNavigate()
 
   const { userData } = useUserContext();
-  console.log(window.innerWidth);
+
 
 
   useEffect(() => {
@@ -61,32 +63,32 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   const adminMenuItems = [
     { name: "Dashboard", icon: <FaTachometerAlt />, path: "/dashboard" },
     { name: "User Management", icon: <FaUsersCog />, path: "/dashboard/user-management" },
-    { name: "Add Course", icon: <FaChartBar />, path: "/dashboard/create-course" },
+    { name: "Add Course", icon: <FaBookMedical />, path: "/dashboard/create-course" },
+    { name: "Add Exam", icon: <FaPenFancy />, path: "/dashboard/create-exam" },
     { name: "Manage Courses", icon: <FaClipboardList />, path: "/dashboard/manage-courses" },
-    { name: "Analytics", icon: <FaDatabase />, path: "/admin/analytics" },
-    { name: "Payment History", icon: <FaCreditCard />, path: "/admin/payment-history" },
-    { name: "Revenue", icon: <FaDollarSign />, path: "/admin/revenue" },
+    { name: "Analytics", icon: <FaDatabase />, path: "/dashboard/analytics" },
+    { name: "Payment History", icon: <FaCreditCard />, path: "/dashboard/payment-history" },
+    { name: "Revenue", icon: <FaDollarSign />, path: "/dashboard/revenue" },
     { name: "Settings", icon: <FaCogs />, path: "/dashboard/settings" },
   ];
 
 
-
   return (
     <div
-      className={`${isOpen ? "w-64" : "w-20"} z-50 bg-white  border-r border-purple-200 shadow-sm h-full  p-4 duration-300 relative`}
+      className={`${isOpen ? "w-64" : "w-20"} z-50 bg-white  border-r border-purple-200 overflow-y-auto overflow-x-hidden shadow-sm h-full  p-4 duration-300 relative`}
     >
       {/* Toggle button */}
       {!isSmallScreen && (
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="absolute top-4 right-[-14px] bg-purple-600 text-white p-1 rounded-full z-10 shadow"
+          className="absolute top-4 right-[10px] bg-purple-600 text-white p-1 rounded-full z-10 shadow"
         >
           {isOpen ? <ChevronLeftIcon className="w-5 h-5" /> : <ChevronRightIcon className="w-5 h-5" />}
         </button>
       )}
 
       {/* SkillHub Logo */}
-      <h1 className={`text-2xl font-bold text-purple-700 mb-6 ${!isOpen && "hidden"}`}>SkillHub</h1>
+      <Link to="/" className={`text-2xl cursor-pointer font-bold text-purple-700 mb-6 ${!isOpen && "hidden"}`}>SkillHub</Link>
 
       {/* Main Menu */}
       {userData?.role !== "Admin" && (
@@ -95,7 +97,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <Link
               key={item.name}
               to={item.path}
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                if (window.innerWidth < 640) {
+                  setIsOpen(false)
+                }
+              }}
               className={`flex  items-center space-x-3 cursor-pointer px-3 py-3 rounded-lg transition-all duration-200 ${item.path === "/dashboard"
                 ? pathname === item.path
                 : pathname.startsWith(item.path)
@@ -135,7 +141,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <ul className="space-y-2 mt-2">
               {adminMenuItems.map((item) => (
                 <Link
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    if (window.innerWidth < 640) {
+                      setIsOpen(false)
+                    }
+                  }}
                   key={item.name}
                   to={item.path}
                   className={`flex  items-center space-x-3 cursor-pointer px-3 py-3 rounded-lg transition-all duration-200 ${item.path === "/dashboard"

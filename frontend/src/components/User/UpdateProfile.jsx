@@ -196,7 +196,7 @@ export default function UpdateProfile() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
             <div className="flex items-center gap-6">
-              {["male", "female", "other"].map((g) => (
+              {["Male", "Female", "Other"].map((g) => (
                 <label key={g} className="inline-flex items-center">
                   <input
                     type="radio"

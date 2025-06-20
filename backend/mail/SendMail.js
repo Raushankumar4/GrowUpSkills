@@ -56,3 +56,15 @@ export const sendResetPasswordEmail = async (to, token) => {
     html,
   });
 };
+
+export const sendOTPEmail = async (toEmail, otp) => {
+  const mailOptions = {
+    from: `"SKILL HUB" ${process.env.EMAIL_USER}`,
+    to: toEmail,
+    subject: "Verify your email - OTP Code",
+    text: `Your OTP code to verify your email is: ${otp}. It will expire in 10 minutes.`,
+    html: `<p>Your OTP code to verify your email is: <b>${otp}</b></p><p>This OTP will expire in 10 minutes.</p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};

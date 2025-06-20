@@ -22,9 +22,9 @@ export const handlePay = async (amount, courseId, userId, userData) => {
       order_id: order.id,
       callback_url: `${import.meta.env.VITE_SERVER}/api/v1/paymentVerification`,
       prefill: {
-        name: userData?.name || "Student",
+        name: userData?.username || "Student",
         email: userData?.email || "student@example.com",
-        contact: userData?.phone || "",
+        contact: userData?.mobile || "",
       },
       theme: {
         color: "#4F46E5",

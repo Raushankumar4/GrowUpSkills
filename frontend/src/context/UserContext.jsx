@@ -1,93 +1,129 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import axiosInstance from "../Axios/AxiosInstance";
 import getCookie from "@/hooks/getCookie";
-
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [courses, setCourses] = useState([]);
-  const [loadingUser, setLoadingUser] = useState(true);
   const [myCourse, setMyCourse] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
   const [course, setCourse] = useState({});
   const [lectures, setLectures] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const coookieToken = getCookie("token")
+  const token = getCookie("token");
+
+  const showLoading = () => setIsLoading(true);
+  const hideLoading = () => setIsLoading(false);
 
   const fetchProfile = async () => {
-    setLoadingUser(true)
+    if (!token) return;
+
     try {
-      const { data } = await axiosInstance.get("profile")
-      setUserData(data?.user)
-      setLoadingUser(false)
+      showLoading();
+      const { data } = await axiosInstance.get("profile");
+      setUserData(data?.user || null);
     } catch (err) {
-      setUserData(null)
-      console.log("Failed to fetch user profile", err);
+      console.error("Failed to fetch user profile:", err);
     } finally {
-      setLoadingUser(false);
+      hideLoading();
     }
   };
-  useEffect(() => {
-    if (!coookieToken) return
-    fetchProfile()
-  }, [coookieToken])
-
-
 
   const getCourses = async () => {
     try {
+      showLoading();
       const { data } = await axiosInstance.get("get-all-course");
-      setCourses(data?.course);
+      setCourses(data?.course || []);
     } catch (error) {
-      console.log("Failed to fetch", error);
+      console.error("Failed to fetch courses:", error);
+    } finally {
+      hideLoading();
     }
   };
 
   const getMyCourses = async () => {
     try {
+      showLoading();
       const { data } = await axiosInstance.get("my-course");
-      setMyCourse(data?.course);
+      setMyCourse(data?.course || []);
     } catch (error) {
-      console.log("Failed to fetch", error);
+      console.error("Failed to fetch my courses:", error);
+    } finally {
+      hideLoading();
     }
   };
+
   const getCourseProgress = async (courseId) => {
     try {
+      showLoading();
       const { data } = await axiosInstance.get(courseId);
-      setCourseProgress(data);
+      setCourseProgress(data || {});
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch course progress:", error);
+    } finally {
+      hideLoading();
     }
   };
 
   const getSingleCourse = async (courseId) => {
     try {
+      showLoading();
       const { data } = await axiosInstance.get(`course?id=${courseId}`);
       setCourse(data?.course || {});
     } catch (error) {
-      console.log('Error fetching course:', error);
-    }
-  }
-
-  const getLectures = async (courseId) => {
-    try {
-      const { data } = await axiosInstance.get(`lectures/${courseId}`);
-      setLectures(data?.lectures || []);
-      console.log(data);
-
-      if (data?.lectures?.length > 0) {
-        setSelectedLecture(data.lectures[0]);
-      }
-    } catch (error) {
-      console.log('Error fetching lectures:', error);
+      console.error("Error fetching course:", error);
+    } finally {
+      hideLoading();
     }
   };
 
+  const getLectures = async (courseId) => {
+    try {
+      showLoading();
+      const { data } = await axiosInstance.get(`lectures/${courseId}`);
+      setLectures(data?.lectures || []);
+    } catch (error) {
+      console.error("Error fetching lectures:", error);
+    } finally {
+      hideLoading();
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, [token]);
+
+  const contextValue = useMemo(() => ({
+    userData,
+    isLoading,
+    courses,
+    myCourse,
+    courseProgress,
+    course,
+    lectures,
+    fetchProfile,
+    getCourses,
+    getMyCourses,
+    getCourseProgress,
+    getSingleCourse,
+    getLectures,
+    showLoading,
+    hideLoading
+  }), [
+    userData,
+    isLoading,
+    courses,
+    myCourse,
+    courseProgress,
+    course,
+    lectures
+  ]);
+
   return (
-    <UserContext.Provider value={{ userData, loadingUser, getCourses, fetchProfile, courses, myCourse, getMyCourses, getCourseProgress, courseProgress, getSingleCourse, course, getLectures, lectures }}
-    >
+    <UserContext.Provider value={contextValue}>
       {children}
     </UserContext.Provider>
   );

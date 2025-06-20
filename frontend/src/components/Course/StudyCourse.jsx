@@ -57,7 +57,7 @@ const StudyCourse = () => {
     sources: selectedLecture?.videoUrl
       ? [
         {
-          src: `http://localhost:8080/stream/${selectedLecture.videoUrl.split('/').pop()}`,
+          src: `${import.meta.env.VITE_SERVER}/stream/${selectedLecture.videoUrl.split('/').pop()}`,
           type: 'video/mp4',
         },
       ]

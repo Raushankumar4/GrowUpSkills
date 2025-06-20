@@ -1,12 +1,42 @@
 import { Payment } from "../models/PaymentSchema.js";
 import User from "../models/user.model.js";
 
-
-
 export const getUserPayments = async (req, res) => {
   try {
     const userId = req.user;
     const payments = await Payment.find({ user: userId })
+      .populate("course")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, payments });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false });
+  }
+};
+
+export const alllPaymentHistory = async (req, res) => {
+  try {
+    const paymentHistory = await Payment.find()
+      .populate({
+        path: "user",
+        select: "username email",
+      })
+      .populate({
+        path: "course",
+        select: "title price",
+      });
+
+    res.status(200).json({ success: true, paymentHistory });
+  } catch (error) {
+    console.error("Error fetching payment history:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const getallPaymentHistory = async (_, res) => {
+  try {
+    const payments = await Payment.find()
       .populate("course")
       .sort({ createdAt: -1 });
 

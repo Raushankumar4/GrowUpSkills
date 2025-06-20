@@ -88,3 +88,33 @@ export const paymentVerification = async (req, res) => {
       .json({ success: false, message: "Payment verification failed" });
   }
 };
+
+export const getPaymentReceipt = async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    const payment = await Payment.findOne({
+      razorpay_payment_id: paymentId,
+    }).populate("user course");
+
+    if (!payment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Receipt not found" });
+    }
+
+    res.json({
+      paymentId: payment.razorpay_payment_id,
+      course: {
+        title: payment.course.title,
+        description: payment.course.description,
+      },
+      user: {
+        name: payment.user.displayName || payment.user.username,
+        email: payment.user.email,
+      },
+      purchaseDate: payment.purchaseConfirmedAt,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

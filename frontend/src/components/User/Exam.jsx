@@ -1,46 +1,24 @@
 import React, { useState } from "react";
+import { useUserContext } from "@/context/UserContext";
+import useCourseQuiz from "@/hooks/useCourseQuiz";
+import axiosInstance from "@/Axios/AxiosInstance";
+import QuizAnswersDetails from "../Admin/Exam/QuizAnswersDetails";
 
 const Exam = () => {
-  const questions = [
-    {
-      id: 1,
-      question: "What is the capital of France?",
-      options: ["Berlin", "Madrid", "Paris", "Rome"],
-      correctAnswer: "Paris",
-    },
-    {
-      id: 2,
-      question: "Which language is used for web development?",
-      options: ["Java", "C++", "JavaScript", "Python"],
-      correctAnswer: "JavaScript",
-    },
-    {
-      id: 3,
-      question: "What is 5 + 3?",
-      options: ["5", "6", "7", "8"],
-      correctAnswer: "8",
-    },
-    {
-      id: 4,
-      question: "Which one is a JavaScript framework?",
-      options: ["Laravel", "Django", "React", "Spring"],
-      correctAnswer: "React",
-    },
-    {
-      id: 5,
-      question: "CSS stands for?",
-      options: [
-        "Cascading Style Script",
-        "Cascading Style Sheets",
-        "Coding Style System",
-        "Creative Style Sheet",
-      ],
-      correctAnswer: "Cascading Style Sheets",
-    },
-  ];
+  const { myCourse, getMyCourses, userData } = useUserContext();
 
+  const [selectedCourseId, setSelectedCourseId] = useState("");
   const [answers, setAnswers] = useState({});
+  const [result, setResult] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+
+ 
+  const { quiz, questions, loading: loadingQuiz, error } = useCourseQuiz(selectedCourseId);
+
+  React.useEffect(() => {
+    getMyCourses();
+  }, []);
 
   const handleAnswerChange = (questionId, selectedOption) => {
     setAnswers((prev) => ({
@@ -49,91 +27,121 @@ const Exam = () => {
     }));
   };
 
-  const calculateScore = () => {
-    let score = 0;
-    questions.forEach((q) => {
-      if (answers[q.id] === q.correctAnswer) score++;
-    });
-    return score;
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (Object.keys(answers).length < questions.length) {
       alert("Please answer all questions before submitting.");
       return;
     }
-    setShowResults(true);
+
+    const formattedAnswers = Object.entries(answers).map(([questionId, selectedAnswer]) => ({
+      questionId,
+      selectedAnswer,
+    }));
+
+    try {
+      setLoadingSubmit(true);
+      const { data } = await axiosInstance.post(
+        `/quizzes/${quiz._id}/submit`,
+        { answers: formattedAnswers, userId: userData?._id }
+      );
+      setResult(data);
+      setShowResults(true);
+    } catch (error) {
+      console.error("Failed to submit exam:", error);
+      alert("Failed to submit exam. Please try again.");
+    } finally {
+      setLoadingSubmit(false);
+    }
   };
 
   const handleRetake = () => {
     setAnswers({});
+    setResult(null);
     setShowResults(false);
   };
 
-  const score = calculateScore();
-
   return (
-    <div className="w-full h-screen flex flex-col">
-      <div className=" text-center flex justify-between mb-4">
-        <h2 className="text-3xl font-semibold text-gray-800 mb-4">📚 Exam</h2>
-        <button
-          onClick={handleSubmit}
-          className="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-all"
+    <div className="w-full min-h-screen flex flex-col p-4 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold text-gray-800">📚 Exam</h2>
+        <select
+          value={selectedCourseId}
+          onChange={(e) => setSelectedCourseId(e.target.value)}
+          className="border border-gray-300 rounded px-3 py-2"
         >
-          Submit Exam
-        </button>
+          <option value="">Select Course</option>
+          {myCourse?.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.title}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {showResults ? (
-        <div className="bg-white p-6 rounded-xl shadow-md text-center mx-auto">
+      {loadingQuiz && <p>Loading quiz...</p>}
+      {error && <p className="text-red-600">Failed to load quiz.</p>}
+
+      {!selectedCourseId && <p>Please select a course to start the quiz.</p>}
+
+      {questions.length > 0 && !showResults && (
+        <>
+          {questions.map((q) => (
+            <div key={q._id} className="mb-6 p-4 border rounded shadow-sm">
+              <p className="font-semibold mb-2">{q.questionText}</p>
+              <div>
+                {[...new Set(q.options)].map((option, index) => (
+                  <label key={`${q._id}-${index}`} className="mr-6 inline-flex items-center">
+                    <input
+                      type="radio"
+                      name={`question-${q._id}`}
+                      value={option}
+                      checked={answers[q._id] === option}
+                      onChange={() => handleAnswerChange(q._id, option)}
+                    />
+                    <span className="ml-2">{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <button
+            onClick={handleSubmit}
+            disabled={loadingSubmit}
+            className="self-start px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition disabled:opacity-50"
+          >
+            {loadingSubmit ? "Submitting..." : "Submit Exam"}
+          </button>
+        </>
+      )}
+
+      {showResults && result && (
+        <div className="bg-white p-6 rounded-xl shadow-md text-center mt-6">
           <h3 className="text-2xl font-bold text-gray-800 mb-4">Your Results</h3>
           <p className="text-xl text-purple-600">
-            ✅ You scored {score} out of {questions.length}
+            ✅ You scored {result.score} out of {result.total}
           </p>
           <p className="text-gray-600 mt-2">
-            {score === questions.length
+            {result.score === result.total
               ? "Perfect! 🎉"
-              : score >= 3
+              : result.score >= 3
                 ? "Good job, keep learning!"
                 : "You can do better next time 💪"}
           </p>
+
           <button
             onClick={handleRetake}
             className="mt-6 px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
           >
             Retake Exam
           </button>
+
+          <QuizAnswersDetails quizId={quiz._id} userId={userData?._id} />
         </div>
-      ) : (
-        <>
-          <div className="overflow-y-auto flex-1 pr-2 mb-4">
-            {questions.map((question) => (
-              <div
-                key={question.id}
-                className="bg-white p-4 mb-4 rounded-lg shadow"
-              >
-                <p className="text-lg font-semibold text-gray-800 mb-2">
-                  {question.question}
-                </p>
-                {question.options.map((option, index) => (
-                  <label key={index} className="block mt-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name={`question-${question.id}`}
-                      value={option}
-                      checked={answers[question.id] === option}
-                      onChange={() => handleAnswerChange(question.id, option)}
-                      className="mr-2"
-                    />
-                    {option}
-                  </label>
-                ))}
-              </div>
-            ))}
-          </div>
+      )}
 
-
-        </>
+      {!questions.length && selectedCourseId && !showResults && (
+        <p>No quizzes found for this course.</p>
       )}
     </div>
   );

@@ -39,25 +39,28 @@ const CourseCard = () => {
 
   return (
     <div className="px-4 py-10 sm:px-6 lg:px-10 pt-20 max-w-9xl mx-auto">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Available Courses</h2>
-
-
-      <div className="mb-6">
-        <label className="block mb-2 text-sm font-medium text-gray-700">
-          Filter by Category:
-        </label>
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md"
-        >
-          {categories.map(category => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
+      {
+        courses?.length >= 1 &&
+        <>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Available Courses</h2>
+          <div className="mb-6">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Filter by Category:
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-md"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+        </>
+      }
 
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">

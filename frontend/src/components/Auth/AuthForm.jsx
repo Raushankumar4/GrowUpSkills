@@ -1,5 +1,4 @@
 import { useAuthContext } from "@/context/AuthContext";
-import { useUserContext } from "@/context/UserContext";
 import { showErrorToast, showSuccessToast } from "@/utils/ToastSimple";
 import axios from "axios";
 import React, { useState } from "react";
@@ -21,9 +20,9 @@ const ModernAuthForm = () => {
     username: "",
   });
 
-  const { fetchProfile } = useUserContext()
 
-  const { setAuthType, setAuthToken } = useAuthContext();
+
+  const { setAuthToken } = useAuthContext();
   const handleChange = (e) => {
     setUserInput({ ...userInput, [e.target.name]: e.target.value });
   };
@@ -50,7 +49,7 @@ const ModernAuthForm = () => {
         showSuccessToast(data?.message || "Login Successfully!");
         navigate("/");
       } else {
-        navigate(-1);
+        navigate("/verify-otp", { state: { userId: data?.userId } });
       }
       console.log(data);
     } catch (error) {

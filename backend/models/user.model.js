@@ -16,6 +16,12 @@ const userSchema = new Schema(
     displayName: { type: String },
     resetToken: String,
     resetTokenExpiry: Date,
+    otp: String,
+    otpExpiry: Date,
+    isVerifiedEmail: {
+      type: Boolean,
+      default: false,
+    },
     email: {
       type: String,
       required: true,
@@ -38,8 +44,8 @@ const userSchema = new Schema(
     },
     gender: {
       type: String,
-      enum: ["Male", "Female", "Other", ""],
-      default: "",
+      enum: ["Male", "Female", "Other"],
+      default: "Male",
     },
     bio: {
       type: String,

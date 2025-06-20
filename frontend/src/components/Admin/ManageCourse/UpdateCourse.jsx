@@ -1,57 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import TabNavigation from "./TabNavigation";
 import CourseForm from "./CourseForm";
-import AddLecture from "./AddLecture";
-
-
+import { useUpdateCourse } from "@/hooks/useUpdateCourse";
+import { useParams } from "react-router-dom";
+import ManageLectures from "./ManageLectures";
 
 const UpdateCourse = () => {
-  const [formData, setFormData] = useState({
-    title: "React Masterclass",
-    description: "Learn React from scratch with hands-on projects.",
-    imageUrl: "https://via.placeholder.com/300",
-    price: "999",
-    courseTag: "React,JavaScript,Frontend",
-    instructor: "John Doe",
-    language: "English",
-    topics: "JSX,Hooks,State Management,Routing",
-    overview: "React basics,Hooks,Building real-world apps",
-  });
-
   const [activeTab, setActiveTab] = useState("update-course");
 
-  const handleTabChange = (tab) => {
+  const handleTabChange = useCallback((tab) => {
     setActiveTab(tab);
-  };
+  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const { id } = useParams();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Updated Course:", formData);
-    alert("Course updated (dummy)");
-  };
+  const {
+    formData,
+    inputValues,
+    handleChange,
+    handleSubmit,
+    imagePreview,
+    inputRef,
+    handleRemoveImage,
+    addToArrayField,
+    removeFromArrayField,
+  } = useUpdateCourse(id);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-800 dark:text-white text-center">
-        Update Course
-      </h2>
       <TabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       {activeTab === "update-course" && (
         <CourseForm
           formData={formData}
-          onChange={handleChange}
+          handleChange={handleChange}
           onSubmit={handleSubmit}
+          imagePreview={imagePreview}
+          onRemoveImage={handleRemoveImage}
+          inputRef={inputRef}
+          inputValues={inputValues}
+          addToArrayField={addToArrayField}
+          removeFromArrayField={removeFromArrayField}
         />
       )}
-      {activeTab === "add-lectures" && <AddLecture />}
+      {activeTab === "manage-lectures" && <ManageLectures />}
     </div>
   );
 };

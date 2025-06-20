@@ -294,16 +294,14 @@ export const uploadLecture = async (req, res) => {
 
 export const updateLecture = async (req, res) => {
   try {
-    const { title, duration, lectureId } = req.body;
+    const { lectureId } = req.params;
+    const { title, duration } = req.body;
 
     const lecture = await Lecture.findById(lectureId);
     if (!lecture) {
       throw new Error("Lecture Required!");
     }
 
-    if (!req.file) {
-      throw new Error("File required!");
-    }
     if (lecture.videoUrl) {
       const oldVideoPath = path.join(__dirname, "..", lecture.videoUrl);
       fs.unlink(oldVideoPath, (err) => {
@@ -316,6 +314,8 @@ export const updateLecture = async (req, res) => {
     }
 
     const videoUrl = `/uploads/${req.file.filename}`;
+    console.log(videoUrl);
+
     const updatedLecture = await Lecture.findByIdAndUpdate(
       lectureId,
       {
@@ -335,7 +335,7 @@ export const updateLecture = async (req, res) => {
 
 export const deleteLecture = async (req, res) => {
   try {
-    const { lectureId, lectureOrder } = req.body;
+    const { lectureId, lectureOrder } = req.query;
     const { courseId } = req.params;
 
     if (!lectureId || !lectureOrder || !courseId) {

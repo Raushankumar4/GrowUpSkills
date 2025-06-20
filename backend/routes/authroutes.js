@@ -26,6 +26,8 @@ router.get("/google/failure", (req, res) => {
 });
 
 router.get("/user", (req, res) => {
+  console.log(req.user);
+
   res.send(req.user);
 });
 

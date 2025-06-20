@@ -52,8 +52,8 @@ const CourseRevenueChartWithBuyers = () => {
                 <ul className="list-disc pl-5 text-sm">
                   {course.buyers.map((user) => (
                     <li key={user._id}>
-                      <strong>{user.username}</strong> ({user.email}) - ID:{" "}
-                      {user.studentID}, Enrollment: {user.enrollement}
+                      <strong>{user.username}</strong> ({user.email})
+
                     </li>
                   ))}
                 </ul>
