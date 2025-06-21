@@ -1,3 +1,4 @@
+import CustomLoader from "@/components/Loading/CustomLoader";
 import React, { useState } from "react";
 
 const CourseForm = ({
@@ -10,6 +11,7 @@ const CourseForm = ({
   inputValues,
   addToArrayField,
   removeFromArrayField,
+  isLoading,
 }) => {
   const stepFields = [
     [
@@ -23,9 +25,7 @@ const CourseForm = ({
       { label: "Category", name: "category", type: "text" },
       { label: "Course Level", name: "courseLevel", type: "text" },
     ],
-    [
-      { label: "Instructor", name: "instructor", type: "text" },
-    ],
+    [{ label: "Instructor", name: "instructor", type: "text" }],
     ["topics", "courseTag", "overview"],
   ];
 
@@ -42,14 +42,21 @@ const CourseForm = ({
       <div className="flex gap-2">
         <input
           name={`add${field.charAt(0).toUpperCase() + field.slice(1)}`}
-          value={inputValues[`add${field.charAt(0).toUpperCase() + field.slice(1)}`]}
+          value={
+            inputValues[`add${field.charAt(0).toUpperCase() + field.slice(1)}`]
+          }
           onChange={handleChange}
           className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"
         />
         <button
           type="button"
           onClick={() =>
-            addToArrayField(field, inputValues[`add${field.charAt(0).toUpperCase() + field.slice(1)}`])
+            addToArrayField(
+              field,
+              inputValues[
+                `add${field.charAt(0).toUpperCase() + field.slice(1)}`
+              ]
+            )
           }
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
@@ -58,7 +65,10 @@ const CourseForm = ({
       </div>
       <div className="flex flex-wrap gap-2">
         {formData[field].map((item, index) => (
-          <div key={index} className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded flex items-center">
+          <div
+            key={index}
+            className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded flex items-center"
+          >
             <span className="mr-2">{item}</span>
             <button
               type="button"
@@ -97,9 +107,9 @@ const CourseForm = ({
     >
       {isTagStep && currentStep === 3 ? (
         <>
-          {renderTagSection("topics", "Topics")}
-          {renderTagSection("courseTag", "Course Tags")}
-          {renderTagSection("overview", "Overview")}
+          {renderTagSection("topics", "Add Moule Topics")}
+          {renderTagSection("courseTag", "Course Includes")}
+          {renderTagSection("overview", "Add Course Overview")}
         </>
       ) : (
         stepFields[currentStep].map(({ label, name, type }) => (
@@ -159,9 +169,15 @@ const CourseForm = ({
         )}
         <button
           type="submit"
-          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded"
+          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded flex items-center justify-center gap-2"
         >
-          {isLastStep ? "Update Course" : "Next"}
+          {isLoading ? (
+            <CustomLoader text="Saving..." />
+          ) : isLastStep ? (
+            "Update Course"
+          ) : (
+            "Next"
+          )}
         </button>
       </div>
     </form>
