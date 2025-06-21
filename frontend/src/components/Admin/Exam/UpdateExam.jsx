@@ -2,9 +2,16 @@ import React, { useState, useEffect } from "react";
 import useCourseQuiz from "@/hooks/useCourseQuiz";
 import axiosInstance from "@/Axios/AxiosInstance";
 import ConfirmModal from "../ManageCourse/ConfirmModal";
+import CustomLoader from "@/components/Loading/CustomLoader";
+import { showErrorToast, showSuccessToast } from "@/utils/ToastSimple";
 
 const UpdateExam = ({ courseId: selectedCourseId }) => {
-  const { quiz, questions: initialQuestions, loading: loadingQuiz, error } = useCourseQuiz(selectedCourseId);
+  const {
+    quiz,
+    questions: initialQuestions,
+    loading: loadingQuiz,
+    error,
+  } = useCourseQuiz(selectedCourseId);
 
   const [questions, setQuestions] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -12,28 +19,27 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
   const [quizDeleted, setQuizDeleted] = useState(false);
   const [quizData, setQuizData] = useState({
     title: "",
-    questions: []
+    questions: [],
   });
 
   useEffect(() => {
     if (quiz) {
       setQuizData({
-        title: quiz?.title || ""
-      })
+        title: quiz?.title || "",
+      });
     }
-  }, [quiz])
-
-
-
+  }, [quiz]);
 
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     message: "",
-    onConfirm: null
+    onConfirm: null,
   });
 
   useEffect(() => {
-    setQuestions(initialQuestions ? JSON.parse(JSON.stringify(initialQuestions)) : []);
+    setQuestions(
+      initialQuestions ? JSON.parse(JSON.stringify(initialQuestions)) : []
+    );
   }, [initialQuestions]);
 
   const addQuestion = () => {
@@ -73,11 +79,14 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
 
     try {
       setSavingQuestionIds((ids) => [...ids, question._id]);
-      await axiosInstance.put(`quizzes/${quiz._id}/questions/${question._id}`, question);
-      alert("Question updated successfully.");
+      await axiosInstance.put(
+        `quizzes/${quiz._id}/questions/${question._id}`,
+        question
+      );
+      showSuccessToast("Question updated successfully!");
     } catch (error) {
       console.error("Failed to update question:", error);
-      alert("Failed to update question. Please try again.");
+      showErrorToast("Failed to update question. Please try again.");
     } finally {
       setSavingQuestionIds((ids) => ids.filter((id) => id !== question._id));
     }
@@ -88,10 +97,10 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
 
     try {
       await axiosInstance.delete(`quizzes/${quiz._id}/questions/${questionId}`);
+      showSuccessToast("Question deleted successfully!");
       return true;
     } catch (error) {
-      console.error("Failed to delete question:", error);
-      alert("Failed to delete question. Please try again.");
+      showErrorToast("Failed to delete question. Please try again.");
       return false;
     }
   };
@@ -149,14 +158,17 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
       }
 
       setSaving(true);
-      const response = await axiosInstance.put(`save-all-quiz/${quiz?._id}`, finalQuizData);
+      const response = await axiosInstance.put(
+        `save-all-quiz/${quiz?._id}`,
+        finalQuizData
+      );
       const updatedQuiz = response?.data;
       setQuizData({ title: updatedQuiz.title || "" });
       setQuestions(updatedQuiz.questions || []);
-      alert("Quiz updated successfully!");
+      showSuccessToast("Quiz updated successfully!");
     } catch (error) {
       console.error("Failed to update quiz:", error);
-      alert("Failed to update quiz. Please try again.");
+      showErrorToast("Failed to update quiz. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -165,23 +177,24 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
   const deleteEntireQuiz = () => {
     setConfirmModal({
       isOpen: true,
-      message: "Are you sure you want to delete the entire quiz? This action cannot be undone.",
+      message:
+        "Are you sure you want to delete the entire quiz? This action cannot be undone.",
       onConfirm: async () => {
         if (!quiz?._id) return;
 
         try {
           setSaving(true);
           await axiosInstance.put(`delete-all-quiz/${quiz._id}`);
-          alert("Quiz deleted successfully!");
+          showSuccessToast("Quiz deleted successfully!");
           setQuizDeleted(true);
         } catch (error) {
           console.error("Failed to delete quiz:", error);
-          alert("Failed to delete quiz. Please try again.");
+          showErrorToast("Failed to delete quiz. Please try again.");
         } finally {
           setSaving(false);
           setConfirmModal({ ...confirmModal, isOpen: false });
         }
-      }
+      },
     });
   };
 
@@ -193,7 +206,8 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h2 className="text-3xl font-bold text-gray-800 mb-6">
-        Update Exam: <span className="text-indigo-600">{quiz.title || "Untitled Quiz"}</span>
+        Update Exam:{" "}
+        <span className="text-indigo-600">{quiz.title || "Untitled Quiz"}</span>
       </h2>
 
       <div className="mb-6">
@@ -212,7 +226,10 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
       {questions.map((q, qIndex) => {
         const isSaving = savingQuestionIds.includes(q._id);
         return (
-          <div key={qIndex} className="mb-8 bg-white border border-gray-200 rounded-lg shadow-sm p-6 relative">
+          <div
+            key={qIndex}
+            className="mb-8 bg-white border border-gray-200 rounded-lg shadow-sm p-6 relative"
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">
                 Question {qIndex + 1}
@@ -249,7 +266,9 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
                   <input
                     type="text"
                     value={option}
-                    onChange={(e) => updateOptionText(qIndex, oIndex, e.target.value)}
+                    onChange={(e) =>
+                      updateOptionText(qIndex, oIndex, e.target.value)
+                    }
                     placeholder={`Option ${oIndex + 1}`}
                     className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
                     disabled={saving || isSaving}
@@ -264,7 +283,7 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
                 disabled={saving || isSaving}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition disabled:opacity-50"
               >
-                {isSaving ? "Saving..." : "Save Question"}
+                {isSaving ? <CustomLoader text="Saving..." /> : "Save Question"}
               </button>
             )}
           </div>
@@ -285,7 +304,7 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
           className="px-6 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition disabled:opacity-50"
           disabled={saving}
         >
-          {saving ? "Saving..." : "Save All Changes"}
+          {saving ? <CustomLoader text="Saving..." /> : "Save All Changes"}
         </button>
 
         <button
@@ -293,7 +312,7 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
           className="px-6 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition disabled:opacity-50"
           disabled={saving}
         >
-          {saving ? "Deleting..." : "Delete Entire Quiz"}
+          {saving ? <CustomLoader text="Deleting..." /> : "Delete Entire Quiz"}
         </button>
       </div>
 
@@ -305,7 +324,6 @@ const UpdateExam = ({ courseId: selectedCourseId }) => {
       />
     </div>
   );
-
 };
 
 export default UpdateExam;
