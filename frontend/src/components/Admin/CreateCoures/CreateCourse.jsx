@@ -153,7 +153,9 @@ const CreateCourse = () => {
     <div className="p-4 sm:p-8 md:p-10 bg-white max-w-screen-lg mx-auto">
       {/* Lecture Upload Section */}
       <div className="mb-6">
-        <h1 className="text-xl font-semibold mb-2">Select Course to Add Lectures</h1>
+        <h1 className="text-xl font-semibold mb-2">
+          Select Course to Add Lectures
+        </h1>
         <div className="flex flex-col sm:flex-row items-start gap-3">
           <select
             onChange={(e) => setSelectCourseId(e.target.value)}
@@ -175,7 +177,10 @@ const CreateCourse = () => {
         </div>
 
         {showUploader && selectCourseId && (
-          <UploadLecture courseId={selectCourseId} onClose={() => setShowUploader(false)} />
+          <UploadLecture
+            courseId={selectCourseId}
+            onClose={() => setShowUploader(false)}
+          />
         )}
       </div>
       <h1 className="py-10 font-bold text-2xl ">Create Course</h1>
@@ -184,13 +189,20 @@ const CreateCourse = () => {
         {[1, 2, 3, 4].map((s, index) => (
           <div key={s} className="flex items-center w-full">
             <div
-              className={`w-8 h-8 flex items-center justify-center rounded-full font-bold z-10 ${step >= s ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-700"
-                }`}
+              className={`w-8 h-8 flex items-center justify-center rounded-full font-bold z-10 ${
+                step >= s
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-300 text-gray-700"
+              }`}
             >
               {s}
             </div>
             {index < 3 && (
-              <div className={`flex-grow h-1 ${step > s ? "bg-blue-600" : "bg-gray-300"}`} />
+              <div
+                className={`flex-grow h-1 ${
+                  step > s ? "bg-blue-600" : "bg-gray-300"
+                }`}
+              />
             )}
           </div>
         ))}
@@ -201,28 +213,66 @@ const CreateCourse = () => {
         {step === 1 && (
           <>
             <h2 className="text-xl font-bold">Step 1: Basic Info</h2>
-            <input name="title" value={userInput.title} onChange={handleOnChange} placeholder="Course Title" className="w-full border p-2 rounded" />
-            <input name="description" value={userInput.description} onChange={handleOnChange} placeholder="Description" className="w-full border p-2 rounded" />
-            <input type="number" name="price" value={userInput.price} onChange={handleOnChange} placeholder="Price" className="w-full border p-2 rounded" />
-            <input type="text" name="instructor" value={userInput.instructor} onChange={handleOnChange} placeholder="Instructor Name" className="w-full border p-2 rounded" />
+            <input
+              name="title"
+              value={userInput.title}
+              onChange={handleOnChange}
+              placeholder="Course Title"
+              className="w-full border p-2 rounded"
+            />
+            <input
+              name="description"
+              value={userInput.description}
+              onChange={handleOnChange}
+              placeholder="Description"
+              className="w-full border p-2 rounded"
+            />
+            <input
+              type="number"
+              name="price"
+              value={userInput.price}
+              onChange={handleOnChange}
+              placeholder="Price"
+              className="w-full border p-2 rounded"
+            />
+            <input
+              type="text"
+              name="instructor"
+              value={userInput.instructor}
+              onChange={handleOnChange}
+              placeholder="Instructor Name"
+              className="w-full border p-2 rounded"
+            />
           </>
         )}
 
         {step === 2 && (
           <>
             <h2 className="text-xl font-bold">Step 2: Course Details</h2>
-            <select name="language" onChange={handleOnChange} className="w-full border p-2 rounded">
+            <select
+              name="language"
+              onChange={handleOnChange}
+              className="w-full border p-2 rounded"
+            >
               <option value="">Select Language</option>
               <option value="English">English</option>
               <option value="Hindi">Hindi</option>
             </select>
-            <select name="courseLevel" onChange={handleOnChange} className="w-full border p-2 rounded">
+            <select
+              name="courseLevel"
+              onChange={handleOnChange}
+              className="w-full border p-2 rounded"
+            >
               <option value="">Select Level</option>
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
               <option value="hard">Hard</option>
             </select>
-            <select name="category" onChange={handleOnChange} className="w-full border p-2 rounded">
+            <select
+              name="category"
+              onChange={handleOnChange}
+              className="w-full border p-2 rounded"
+            >
               <option value="">Select Category</option>
               <option value="Web Development">Web Development</option>
               <option value="Data Science">Data Science</option>
@@ -235,8 +285,11 @@ const CreateCourse = () => {
                 type="text"
                 value={addTag}
                 onChange={(e) => setAddTag(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddCourseTag())}
-                placeholder="Add Tag"
+                onKeyDown={(e) =>
+                  e.key === "Enter" &&
+                  (e.preventDefault(), handleAddCourseTag())
+                }
+                placeholder="Course Includes (e.g., React, Node.js)"
                 className="flex-grow border p-2 rounded"
               />
               <button
@@ -244,7 +297,7 @@ const CreateCourse = () => {
                 onClick={handleAddCourseTag}
                 className="px-3 py-2 bg-blue-600 text-white rounded"
               >
-                Add Tag
+                Course Inludes
               </button>
             </div>
 
@@ -270,11 +323,17 @@ const CreateCourse = () => {
                 type="text"
                 value={addOveriew}
                 onChange={(e) => setAddOveriew(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddOveriew())}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && (e.preventDefault(), handleAddOveriew())
+                }
                 placeholder="Add Overview Point"
                 className="flex-grow border p-2 rounded"
               />
-              <button type="button" onClick={handleAddOveriew} className="px-3 py-2 bg-blue-600 text-white rounded">
+              <button
+                type="button"
+                onClick={handleAddOveriew}
+                className="px-3 py-2 bg-blue-600 text-white rounded"
+              >
                 Add Overview
               </button>
             </div>
@@ -295,12 +354,18 @@ const CreateCourse = () => {
                 type="text"
                 value={addTopics}
                 onChange={(e) => setAddTopics(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTopics())}
-                placeholder="Add Topic"
+                onKeyDown={(e) =>
+                  e.key === "Enter" && (e.preventDefault(), handleAddTopics())
+                }
+                placeholder="Add Module Topic"
                 className="flex-grow border p-2 rounded"
               />
-              <button type="button" onClick={handleAddTopics} className="px-3 py-2 bg-blue-600 text-white rounded">
-                Add Topic
+              <button
+                type="button"
+                onClick={handleAddTopics}
+                className="px-3 py-2 bg-blue-600 text-white rounded"
+              >
+                Add Module Topic
               </button>
             </div>
             <div className="flex gap-2 flex-wrap mt-2">
@@ -328,7 +393,11 @@ const CreateCourse = () => {
             </label>
             {imagePreview && (
               <div className="mt-4 relative w-fit">
-                <img src={imagePreview} alt="Preview" className="w-22 rounded shadow" />
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-22 rounded shadow"
+                />
                 <button
                   type="button"
                   onClick={removePreview}
@@ -345,17 +414,53 @@ const CreateCourse = () => {
           <>
             <h2 className="text-xl font-bold">Step 4: Review Your Course</h2>
             <div className="space-y-2 text-sm text-gray-800">
-              <p><strong>Title:</strong> {userInput.title}</p>
-              <p><strong>Description:</strong> {userInput.description}</p>
-              <p><strong>Price:</strong> ${userInput.price}</p>
-              <p><strong>Language:</strong> {userInput.language}</p>
-              <p><strong>Level:</strong> {userInput.courseLevel}</p>
-              <p><strong>Category:</strong> {userInput.category}</p>
-              <p><strong>Instructor:</strong> {userInput.instructor}</p>
-              <p><strong>Tags:</strong> {userInput.courseTag.join(", ")}</p>
-              <p><strong>Overview:</strong> <ul className="list-disc list-inside">{userInput.overview.map((i, idx) => <li key={idx}>{i}</li>)}</ul></p>
-              <p><strong>Topics:</strong> <ul className="list-disc list-inside">{userInput.topics.map((t, idx) => <li key={idx}>{t}</li>)}</ul></p>
-              {imagePreview && <img src={imagePreview} alt="Preview" className="w-32 mt-2 rounded shadow" />}
+              <p>
+                <strong>Title:</strong> {userInput.title}
+              </p>
+              <p>
+                <strong>Description:</strong> {userInput.description}
+              </p>
+              <p>
+                <strong>Price:</strong> ${userInput.price}
+              </p>
+              <p>
+                <strong>Language:</strong> {userInput.language}
+              </p>
+              <p>
+                <strong>Level:</strong> {userInput.courseLevel}
+              </p>
+              <p>
+                <strong>Category:</strong> {userInput.category}
+              </p>
+              <p>
+                <strong>Instructor:</strong> {userInput.instructor}
+              </p>
+              <p>
+                <strong>Tags:</strong> {userInput.courseTag.join(", ")}
+              </p>
+              <p>
+                <strong>Overview:</strong>{" "}
+                <ul className="list-disc list-inside">
+                  {userInput.overview.map((i, idx) => (
+                    <li key={idx}>{i}</li>
+                  ))}
+                </ul>
+              </p>
+              <p>
+                <strong>Topics:</strong>{" "}
+                <ul className="list-disc list-inside">
+                  {userInput.topics.map((t, idx) => (
+                    <li key={idx}>{t}</li>
+                  ))}
+                </ul>
+              </p>
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-32 mt-2 rounded shadow"
+                />
+              )}
             </div>
           </>
         )}
@@ -363,13 +468,19 @@ const CreateCourse = () => {
         {/* Step Navigation Buttons */}
         <div className="flex justify-between flex-wrap gap-2 pt-4">
           {step > 1 && (
-            <button type="button" onClick={prevStep} className="px-4 py-2 bg-gray-300 rounded">
+            <button
+              type="button"
+              onClick={prevStep}
+              className="px-4 py-2 bg-gray-300 rounded"
+            >
               Back
             </button>
           )}
           <button
             type="submit"
-            className={`px-4 py-2 text-white rounded ${step === 4 ? "bg-green-600" : "bg-blue-600"}`}
+            className={`px-4 py-2 text-white rounded ${
+              step === 4 ? "bg-green-600" : "bg-blue-600"
+            }`}
             disabled={loading}
           >
             {step === 4 ? (loading ? "Please Wait..." : "Create") : "Next"}
