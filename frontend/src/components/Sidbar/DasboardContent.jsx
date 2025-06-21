@@ -4,7 +4,8 @@ import { useUserContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const DashboardContent = () => {
-  const { myCourse, getMyCourses, getCourseProgress, courseProgress } = useUserContext();
+  const { myCourse, getMyCourses, getCourseProgress, courseProgress } =
+    useUserContext();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,11 +38,11 @@ const DashboardContent = () => {
               </>
             ) : (
               <>
-                No Courses Yet. <span className="text-purple-600">Get Started!</span>
+                No Courses Yet.{" "}
+                <span className="text-purple-600">Get Started!</span>
               </>
             )}
           </h2>
-
 
           {myCourse?.length > 0 ? (
             <div className="grid sm:grid-cols-2 gap-4">
@@ -56,9 +57,12 @@ const DashboardContent = () => {
                   >
                     <div className="w-full aspect-video bg-gray-200 rounded-lg mb-3 overflow-hidden">
                       <img
-                        src={course?.thumbnail || "https://via.placeholder.com/300x180?text=Course+Image"}
+                        src={
+                          course?.imageUrl ||
+                          "https://via.placeholder.com/300x180?text=Course+Image"
+                        }
                         alt="Course"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-fit"
                       />
                     </div>
                     <h3 className="font-semibold text-gray-800 text-sm sm:text-base mb-1">
@@ -113,8 +117,8 @@ const DashboardContent = () => {
         </div>
 
         {/* Right Side: Classes & Updates */}
-        {
-          myCourse.length < 0 && <div className="mt-6 lg:mt-0">
+        {myCourse.length < 0 && (
+          <div className="mt-6 lg:mt-0">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-800">
                 Today’s <span className="text-purple-600">Classes</span>
@@ -139,7 +143,7 @@ const DashboardContent = () => {
               <p className="text-gray-500">No New Updates.</p>
             </div>
           </div>
-        }
+        )}
       </div>
     </div>
   );
