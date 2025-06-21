@@ -24,6 +24,7 @@ const UpdateCourse = () => {
     handleRemoveImage,
     addToArrayField,
     removeFromArrayField,
+    isLoading,
   } = useUpdateCourse(id);
 
   return (
@@ -40,6 +41,7 @@ const UpdateCourse = () => {
           inputValues={inputValues}
           addToArrayField={addToArrayField}
           removeFromArrayField={removeFromArrayField}
+          isLoading={isLoading}
         />
       )}
       {activeTab === "manage-lectures" && <ManageLectures />}

@@ -1,4 +1,3 @@
-
 import ManageCourses from "@/components/Admin/ManageCourse/ManageCourses";
 import UserManagement from "@/components/Admin/ManageCourse/UserManagment";
 import ForgotPassword from "@/components/Auth/ForgotPassword";
@@ -24,12 +23,18 @@ import VerifyOtp from "@/components/Auth/VerifyOtp";
 import PaymentHistory from "@/components/Payment/PaymentHistory";
 import Revenue from "@/components/Admin/Revenue/Revenue";
 import Analytics from "@/components/Admin/Revenue/Analytics";
+import Home from "@/components/Home/Home";
+import MyExam from "@/components/User/MyExam";
 
 const App = lazy(() => import("../App"));
-const PurchaseSuccess = lazy(() => import("../components/Course/PurchaseSuccess"));
+const PurchaseSuccess = lazy(() =>
+  import("../components/Course/PurchaseSuccess")
+);
 const PaymentSuccess = lazy(() => import("../razorpay/PaymentSuccess"));
 const SearchCourse = lazy(() => import("../components/Course/SearchCourse"));
-const CreateCourse = lazy(() => import("@/components/Admin/CreateCoures/CreateCourse"));
+const CreateCourse = lazy(() =>
+  import("@/components/Admin/CreateCoures/CreateCourse")
+);
 const CourseDetails = lazy(() => import("@/components/Course/CourseDetails"));
 const CourseCard = lazy(() => import("@/razorpay/CourseCard"));
 const AuthForm = lazy(() => import("@/components/Auth/AuthForm"));
@@ -47,15 +52,17 @@ export const router = createBrowserRouter([
     ),
     errorElement: <RouterError />,
     children: [
+      { index: true, element: <Home /> },
 
       { path: "course/:courseId", element: <CourseDetails /> },
       { path: "purchase-success", element: <PurchaseSuccess /> },
       { path: "/courses/search", element: <SearchCourse /> },
       { path: "courses", element: <CourseCard /> },
       { path: "/oauth-success", element: <OAuthSuccess /> },
-
+      { path: "course-details/:courseId", element: <CourseDetails /> },
     ],
   },
+  { path: "/exam", element: <Exam /> },
 
   { path: "login", element: <AuthForm /> },
   { path: "paymentSuccess", element: <PaymentSuccess /> },
@@ -63,8 +70,6 @@ export const router = createBrowserRouter([
   { path: "forgot", element: <ForgotPassword /> },
   { path: "reset-password/:token", element: <ResetPassword /> },
   { path: "verify-otp", element: <VerifyOtp /> },
-
-
 
   // Admin
   {
@@ -92,11 +97,9 @@ export const router = createBrowserRouter([
       { path: "course", element: <MyCourses /> },
       { path: "profile", element: <UpdateProfile /> },
       { path: "certificates", element: <MyCertificates /> },
-      { path: "exams", element: <Exam /> },
+      { path: "my-exams", element: <MyExam /> },
       { path: "calendar", element: <Calendar /> },
       { path: "settings", element: <StudentSettings /> },
-
     ],
   },
 ]);
-

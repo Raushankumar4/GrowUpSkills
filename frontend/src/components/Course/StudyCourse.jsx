@@ -1,33 +1,40 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import axiosInstance from '../../Axios/AxiosInstance';
+import React, { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router-dom";
+import axiosInstance from "../../Axios/AxiosInstance";
 import {
   CheckCircleIcon,
   PlayCircleIcon,
   ClockIcon,
   AcademicCapIcon,
-} from '@heroicons/react/24/outline';
-import VideoJS from '../VideoPlayer/VideoPlayer';
-import '../VideoPlayer/VideoPlayer.css';
-import { useUserContext } from '../../context/UserContext';
-import { PlayCircle } from 'lucide-react'
+} from "@heroicons/react/24/outline";
+import VideoJS from "../VideoPlayer/VideoPlayer";
+import "../VideoPlayer/VideoPlayer.css";
+import { useUserContext } from "../../context/UserContext";
+import { PlayCircle } from "lucide-react";
+import Loading from "../Loading/Loading";
 
 const StudyCourse = () => {
   const { courseId } = useParams();
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [videoDuration, setVideoDuration] = useState(null);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const playerRef = useRef(null);
 
-  const { getCourseProgress, courseProgress, getSingleCourse, course, getLectures, lectures } = useUserContext()
+  const {
+    getCourseProgress,
+    courseProgress,
+    getSingleCourse,
+    course,
+    getLectures,
+    lectures,
+  } = useUserContext();
 
   useEffect(() => {
     const fetchAll = async () => {
-      await Promise.all([getLectures(courseId), getCourseProgress(courseId),])
-    }
-    fetchAll()
-  }, [courseId])
-
+      await Promise.all([getLectures(courseId), getCourseProgress(courseId)]);
+    };
+    fetchAll();
+  }, [courseId]);
 
   const markAsCompletedLecture = async (courseId, lectureOrder) => {
     try {
@@ -41,12 +48,10 @@ const StudyCourse = () => {
     }
   };
 
-
-
   const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = Math.floor(totalSeconds % 60);
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
   const videoJsOptions = {
@@ -56,49 +61,44 @@ const StudyCourse = () => {
     fluid: true,
     sources: selectedLecture?.videoUrl
       ? [
-        {
-          src: `${import.meta.env.VITE_SERVER}/stream/${selectedLecture.videoUrl.split('/').pop()}`,
-          type: 'video/mp4',
-        },
-      ]
+          {
+            src: `${
+              import.meta.env.VITE_SERVER
+            }/stream/${selectedLecture.videoUrl.split("/").pop()}`,
+            type: "video/mp4",
+          },
+        ]
       : [],
   };
-
 
   const handlePlayerReady = (player) => {
     playerRef.current = player;
 
-
-    player.on('loadedmetadata', () => {
+    player.on("loadedmetadata", () => {
       const duration = player.duration();
       setVideoDuration(formatTime(duration));
     });
 
-
-    player.on('ended', () => {
+    player.on("ended", () => {
       markAsCompletedLecture(courseId, selectedLecture?.order);
-
     });
   };
 
   useEffect(() => {
     const fetchAll = async () => {
-      await Promise.all([getSingleCourse(courseId),
-      getLectures(courseId),
-      getCourseProgress(courseId),])
-      setLoading(false)
-    }
-    fetchAll()
+      await Promise.all([
+        getSingleCourse(courseId),
+        getLectures(courseId),
+        getCourseProgress(courseId),
+      ]);
+      setLoading(false);
+    };
+    fetchAll();
   }, [courseId]);
 
   if (loading) {
-    return (
-      <div className="h-screen w-screen flex items-center justify-center bg-white dark:bg-gray-900">
-        <p className="text-lg text-gray-700 dark:text-gray-200 animate-pulse">Loading...</p>
-      </div>
-    );
+    return <Loading />;
   }
-
 
   return (
     <div className="min-h-screen pt-20 px-4 md:px-8 py-10 dark:bg-gray-800 dark:text-white">
@@ -129,7 +129,6 @@ const StudyCourse = () => {
           </div>
         </div>
 
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[75vh]">
           {/* Lecture List (Left - Fixed Scroll) */}
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 border border-gray-100 dark:border-gray-700 overflow-y-auto max-h-full md:col-span-1">
@@ -142,19 +141,23 @@ const StudyCourse = () => {
                   key={index}
                   onClick={() => setSelectedLecture(lecture)}
                   className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition
-                      ${selectedLecture?.videoUrl === lecture?.videoUrl
-                      ? 'bg-indigo-50 dark:bg-indigo-700 border-indigo-400 text-indigo-700 dark:text-indigo-300'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 text-gray-700 dark:text-gray-300'
-                    }`}
+                      ${
+                        selectedLecture?.videoUrl === lecture?.videoUrl
+                          ? "bg-indigo-50 dark:bg-indigo-700 border-indigo-400 text-indigo-700 dark:text-indigo-300"
+                          : "hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 text-gray-700 dark:text-gray-300"
+                      }`}
                 >
                   <div className="flex items-center gap-2">
                     <PlayCircleIcon className="h-5 w-5 text-blue-500 dark:text-blue-300" />
                     <span className="text-sm">{lecture?.title}</span>
 
-                    {videoDuration ? `Duration: ${videoDuration}` : "⏱ Loading..."}
-
+                    {videoDuration
+                      ? `Duration: ${videoDuration}`
+                      : "⏱ Loading..."}
                   </div>
-                  {courseProgress?.completedLectures?.includes(lecture.order) && (
+                  {courseProgress?.completedLectures?.includes(
+                    lecture.order
+                  ) && (
                     <CheckCircleIcon className="h-5 w-5 text-green-500 dark:text-green-400" />
                   )}
                 </li>
@@ -164,8 +167,6 @@ const StudyCourse = () => {
 
           {/* Video + Comment (Right - Scrollable) */}
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 border border-gray-100 dark:border-gray-700 overflow-y-auto max-h-full md:col-span-2">
-
-
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">
@@ -174,8 +175,10 @@ const StudyCourse = () => {
                 {selectedLecture?.videoUrl ? (
                   <>
                     <div className="aspect-video rounded overflow-hidden border border-gray-200 dark:border-gray-700">
-
-                      <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+                      <VideoJS
+                        options={videoJsOptions}
+                        onReady={handlePlayerReady}
+                      />
                     </div>
                   </>
                 ) : (
@@ -187,13 +190,21 @@ const StudyCourse = () => {
 
               {/* Dummy Comment Section */}
               <div className="mt-6">
-                <h4 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">💬 Comments</h4>
+                <h4 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">
+                  💬 Comments
+                </h4>
                 <div className="space-y-4">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border dark:border-gray-700">
-                      <p className="font-medium text-sm text-indigo-700 dark:text-indigo-300">Student {i + 1}</p>
+                    <div
+                      key={i}
+                      className="p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border dark:border-gray-700"
+                    >
+                      <p className="font-medium text-sm text-indigo-700 dark:text-indigo-300">
+                        Student {i + 1}
+                      </p>
                       <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-                        This is a dummy comment for the lecture. Very informative!
+                        This is a dummy comment for the lecture. Very
+                        informative!
                       </p>
                     </div>
                   ))}
@@ -215,16 +226,12 @@ const StudyCourse = () => {
                   </button>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-
-
-
 };
 
 export default StudyCourse;

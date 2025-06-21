@@ -21,7 +21,7 @@ export default function UpdateProfile() {
   const [avatarPreview, setAvatarPreview] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [hasError, setHasError] = useState(false); 
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (userData) {
@@ -42,7 +42,7 @@ export default function UpdateProfile() {
         avatar: null,
       });
 
-      setAvatarPreview(userData?.avatar || "");
+      setAvatarPreview(userData?.avatar || userData?.photo || "");
     }
   }, [userData]);
 
@@ -119,9 +119,24 @@ export default function UpdateProfile() {
             onClick={handleClick}
             className="absolute bottom-0 right-0 bg-gray-300 p-2 rounded-full cursor-pointer"
           >
-            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l7-7a2.828 2.828 0 10-4-4l-7 7v3z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 21H4a1 1 0 01-1-1v-6a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1z" />
+            <svg
+              className="h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15.232 5.232l3.536 3.536M9 13h3l7-7a2.828 2.828 0 10-4-4l-7 7v3z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 21H4a1 1 0 01-1-1v-6a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1z"
+              />
             </svg>
           </div>
           <input
@@ -138,7 +153,9 @@ export default function UpdateProfile() {
         <div className="mt-8 w-full p-6 rounded-xl space-y-6">
           {/* Username */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name *</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Name *
+            </label>
             <input
               name="username"
               value={formData.username}
@@ -151,7 +168,9 @@ export default function UpdateProfile() {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email ✔</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email ✔
+            </label>
             <input
               name="email"
               value={formData.email}
@@ -163,7 +182,9 @@ export default function UpdateProfile() {
 
           {/* Mobile */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Mobile *</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Mobile *
+            </label>
             <div className="flex mt-1">
               <span className="inline-flex items-center px-3 bg-gray-100 border border-r-0 border-gray-300 text-gray-600 text-sm rounded-l-md">
                 🇮🇳 +91
@@ -181,7 +202,9 @@ export default function UpdateProfile() {
 
           {/* College */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">College Name *</label>
+            <label className="block text-sm font-medium text-gray-700">
+              College Name *
+            </label>
             <input
               name="college"
               value={formData.college}
@@ -194,7 +217,9 @@ export default function UpdateProfile() {
 
           {/* Gender */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Gender *
+            </label>
             <div className="flex items-center gap-6">
               {["Male", "Female", "Other"].map((g) => (
                 <label key={g} className="inline-flex items-center">
@@ -214,7 +239,9 @@ export default function UpdateProfile() {
 
           {/* DOB */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Date of Birth
+            </label>
             <input
               type="date"
               name="dob"
@@ -226,7 +253,9 @@ export default function UpdateProfile() {
 
           {/* Bio */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Bio</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Bio
+            </label>
             <textarea
               name="bio"
               value={formData.bio}

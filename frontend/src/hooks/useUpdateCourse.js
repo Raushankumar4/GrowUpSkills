@@ -1,9 +1,13 @@
 import axiosInstance from "@/Axios/AxiosInstance";
 import { useUserContext } from "@/context/UserContext";
+import { showSuccessToast } from "@/utils/ToastSimple";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const useUpdateCourse = (courseId) => {
-  const { getSingleCourse, course } = useUserContext();
+  const { getSingleCourse, course, showLoading, hideLoading, isLoading } =
+    useUserContext();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -102,6 +106,7 @@ export const useUpdateCourse = (courseId) => {
     e.preventDefault();
 
     try {
+      showLoading();
       const updatedData = new FormData();
 
       updatedData.append("title", formData.title);
@@ -130,11 +135,13 @@ export const useUpdateCourse = (courseId) => {
       );
 
       getSingleCourse(courseId);
-      console.log(data);
-      alert("Course updated successfully!");
+      showSuccessToast(data?.message || "Course updated successfully!");
+      navigate(`/courses`);
     } catch (error) {
       console.error("Error updating course:", error);
       alert("Failed to update course.");
+    } finally {
+      hideLoading();
     }
   };
 
@@ -148,5 +155,6 @@ export const useUpdateCourse = (courseId) => {
     handleRemoveImage,
     addToArrayField,
     removeFromArrayField,
+    isLoading,
   };
 };

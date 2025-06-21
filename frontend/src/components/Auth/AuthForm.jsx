@@ -6,21 +6,21 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import setCookie from "@/hooks/setCookie";
 import removeCookie from "@/hooks/removeCookie";
-
-
+import { useUserContext } from "@/context/UserContext";
+import CustomLoader from "../Loading/CustomLoader";
 
 const ModernAuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  const { isLoading, hideLoading, showLoading } = useUserContext();
+
   const [userInput, setUserInput] = useState({
     email: "",
     password: "",
     username: "",
   });
-
-
 
   const { setAuthToken } = useAuthContext();
   const handleChange = (e) => {
@@ -41,11 +41,12 @@ const ModernAuthForm = () => {
     }
     const authData = isLogin ? filterData : userInput;
     try {
+      showLoading();
       const { data } = await axios.post(url, authData);
       if (isLogin && data) {
-        removeCookie("token")
-        setCookie("token", data?.token)
-        setAuthToken(data?.token)
+        removeCookie("token");
+        setCookie("token", data?.token);
+        setAuthToken(data?.token);
         showSuccessToast(data?.message || "Login Successfully!");
         navigate("/");
       } else {
@@ -55,9 +56,10 @@ const ModernAuthForm = () => {
     } catch (error) {
       showErrorToast(error.response.data.message);
       console.log(error.response.data.message);
+    } finally {
+      hideLoading();
     }
   };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 px-4">
@@ -119,7 +121,10 @@ const ModernAuthForm = () => {
 
             {isLogin && (
               <div className="text-right">
-                <Link to="/forgot" className="text-sm text-indigo-600 hover:underline">
+                <Link
+                  to="/forgot"
+                  className="text-sm text-indigo-600 hover:underline"
+                >
                   Forgot Password?
                 </Link>
               </div>
@@ -129,7 +134,15 @@ const ModernAuthForm = () => {
               type="submit"
               className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
             >
-              {isLogin ? "Login" : "Sign Up"}
+              {isLoading ? (
+                <CustomLoader
+                  text={isLogin ? "Logging in..." : "Signing up..."}
+                />
+              ) : isLogin ? (
+                "Login"
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </form>
 

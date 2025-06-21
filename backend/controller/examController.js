@@ -107,7 +107,7 @@ export const getAnswersDetails = async (req, res) => {
     const attempt = await QuizAttempt.findOne({
       quiz: quizId,
       user: userObjId,
-    });
+    }).sort({ createdAt: -1 });
     if (!attempt) {
       return res
         .status(404)
