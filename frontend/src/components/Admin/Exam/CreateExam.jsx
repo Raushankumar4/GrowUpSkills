@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axiosInstance from "@/Axios/AxiosInstance";
 import { useUserContext } from "@/context/UserContext";
 import UpdateExam from "./UpdateExam";
+import CustomLoader from "@/components/Loading/CustomLoader";
+import { showErrorToast, showSuccessToast } from "@/utils/ToastSimple";
 
 export default function CreateExam() {
   const [quizData, setQuizData] = useState({
@@ -19,7 +21,8 @@ export default function CreateExam() {
 
   const [current, setCurrent] = useState("Create-exam");
   const [selectedCourseId, setSelectedCourseId] = useState("");
-  const { courses, getCourses } = useUserContext();
+  const { courses, getCourses, isLoading, hideLoading, showLoading } =
+    useUserContext();
 
   useEffect(() => {
     getCourses();
@@ -65,6 +68,7 @@ export default function CreateExam() {
     };
 
     try {
+      showLoading();
       await axiosInstance.post("create-course-quiz/quizzes", finalQuizData);
       setQuizData({ title: "", questions: [] });
       setQuestionsData([
@@ -74,9 +78,13 @@ export default function CreateExam() {
           correctAnswer: "",
         },
       ]);
+      showSuccessToast("Quiz created successfully!");
       setSelectedCourseId("");
     } catch (error) {
+      showErrorToast("Error creating quiz. Please try again.");
       console.error("Error creating quiz:", error);
+    } finally {
+      hideLoading();
     }
   };
 
@@ -86,7 +94,9 @@ export default function CreateExam() {
 
       {/* Course Selector */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Select Course</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Select Course
+        </label>
         <select
           value={selectedCourseId}
           onChange={(e) => setSelectedCourseId(e.target.value)}
@@ -107,34 +117,39 @@ export default function CreateExam() {
       <div className="flex justify-center gap-4 mb-8">
         <button
           onClick={() => setCurrent("Create-exam")}
-          className={`px-4 py-2 rounded-md font-medium ${current === "Create-exam"
-            ? "bg-blue-600 text-white"
-            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
+          className={`px-4 py-2 rounded-md font-medium ${
+            current === "Create-exam"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
         >
           Create Exam
         </button>
         <button
           onClick={() => setCurrent("Manage-Exam")}
-          className={`px-4 py-2 rounded-md font-medium ${current === "Manage-Exam"
-            ? "bg-blue-600 text-white"
-            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
+          className={`px-4 py-2 rounded-md font-medium ${
+            current === "Manage-Exam"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
         >
           Manage Exam
         </button>
       </div>
 
-
       {selectedCourseId ? (
         current === "Create-exam" ? (
           <form onSubmit={handleSubmit} className="space-y-8">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quiz Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Quiz Title
+              </label>
               <input
                 type="text"
                 value={quizData.title}
-                onChange={(e) => setQuizData({ ...quizData, title: e.target.value })}
+                onChange={(e) =>
+                  setQuizData({ ...quizData, title: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter quiz title"
               />
@@ -146,7 +161,9 @@ export default function CreateExam() {
                 className="p-6 bg-gray-50 border border-gray-200 rounded-lg shadow-sm relative"
               >
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-700">Question #{index + 1}</h3>
+                  <h3 className="text-lg font-semibold text-gray-700">
+                    Question #{index + 1}
+                  </h3>
                   {questionsData.length > 1 && (
                     <button
                       type="button"
@@ -201,23 +218,36 @@ export default function CreateExam() {
                 ➕ Add Question
               </button>
 
-              <button
-                type="submit"
-                className="inline-flex items-center px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-md shadow hover:bg-green-700 transition"
-              >
-                ✅ Submit Quiz
-              </button>
+              {isLoading ? (
+                <button
+                  type="submit"
+                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md shadow hover:bg-green-700 transition"
+                  disabled
+                >
+                  <CustomLoader text="Creating Exam.." />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md shadow hover:bg-green-700 transition"
+                >
+                  Create Exam
+                </button>
+              )}
             </div>
           </form>
         ) : (
-
           <div>
-            <h3 className="text-xl font-semibold mb-4">Manage Exams for selected course</h3>
+            <h3 className="text-xl font-semibold mb-4">
+              Manage Exams for selected course
+            </h3>
             <UpdateExam courseId={selectedCourseId} />
           </div>
         )
       ) : (
-        <p className="text-center text-gray-500">Please select a course to proceed.</p>
+        <p className="text-center text-gray-500">
+          Please select a course to proceed.
+        </p>
       )}
     </div>
   );
