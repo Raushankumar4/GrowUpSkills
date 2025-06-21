@@ -1,32 +1,31 @@
-import React from 'react';
+import React from "react";
+import { GraduationCap } from "lucide-react";
 
-function Loading() {
+const Loading = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="flex flex-col items-center space-y-4">
-        <svg
-          className="animate-spin h-10 w-10 text-blue-600"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-          />
-        </svg>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-zinc-900 text-center px-4">
+      {/* Animated Graduation Icon */}
+      <div className="animate-bounce mb-4">
+        <GraduationCap className="w-14 h-14 text-purple-600 dark:text-purple-400" />
+      </div>
+
+      {/* Loading Text */}
+      <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-2">
+        SkillHub is preparing your content...
+      </h1>
+
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Please wait while we load your personalized learning experience. 🚀
+      </p>
+
+      {/* Animated dots */}
+      <div className="mt-6 flex gap-2">
+        <span className="w-3 h-3 bg-purple-600 rounded-full animate-bounce"></span>
+        <span className="w-3 h-3 bg-purple-600 rounded-full animate-bounce delay-150"></span>
+        <span className="w-3 h-3 bg-purple-600 rounded-full animate-bounce delay-300"></span>
       </div>
     </div>
   );
-}
+};
 
 export default Loading;
