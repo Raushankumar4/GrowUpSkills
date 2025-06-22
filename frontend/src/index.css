@@ -118,3 +118,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .bg-skillhub-pattern {
+    background-color: #1e1e2f;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 80px),
+      repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 80px),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 1px, transparent 1px, transparent 80px);
+    background-size: 160px 160px;
+    position: relative;
+  }
+
+  .bg-skillhub-pattern::before {
+    content: "SkillHub SkillHub SkillHub SkillHub SkillHub";
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.025);
+    white-space: pre;
+    transform: rotate(-30deg);
+    z-index: 0;
+    pointer-events: none;
+    background-repeat: repeat;
+  }
+}
+

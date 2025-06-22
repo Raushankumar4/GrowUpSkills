@@ -1,86 +1,91 @@
-import axiosInstance from '@/Axios/AxiosInstance';
-import { showErrorToast, showSuccessToast } from '@/utils/ToastSimple';
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import axiosInstance from "@/Axios/AxiosInstance";
+import { showErrorToast, showSuccessToast } from "@/utils/ToastSimple";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [emailSent, setEmailSent] = useState(false);
-  const [email, setEmail] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-  const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
-    setIsLoading(true)
+    setErrorMsg("");
+    setIsLoading(true);
     try {
-      const { data } = await axiosInstance.post('forgot-password', { email });
+      const { data } = await axiosInstance.post("forgot-password", { email });
       setEmailSent(true);
-      setIsLoading(false)
-      showSuccessToast(data?.message)
+      setIsLoading(false);
+      showSuccessToast(data?.message);
     } catch (error) {
-      setIsLoading(false)
-      showErrorToast(error.response?.data?.message || 'Failed to send reset link')
-      console.log(error.response?.data?.message || 'Something went wrong');
-      setErrorMsg(error.response?.data?.message || 'Failed to send reset link');
+      setIsLoading(false);
+      showErrorToast(
+        error.response?.data?.message || "Failed to send reset link"
+      );
+      setErrorMsg(error.response?.data?.message || "Failed to send reset link");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 px-4">
-      <div className="bg-white shadow-xl rounded-xl w-full max-w-2xl overflow-hidden flex flex-col md:flex-row">
-        {/* Left Side - Info/Illustration */}
-        <div className="hidden md:block md:w-1/2 bg-indigo-500 text-white p-8">
-          <h2 className="text-3xl font-bold mb-4">Forgot Your Password?</h2>
-          <p className="text-sm">
-            Don’t worry, it happens. Enter your email and we’ll send you a reset link.
-          </p>
-        </div>
+    <div className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-10 py-10 font-inter bg-skillhub-pattern overflow-hidden">
+      <div className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 sm:p-8 md:p-10 shadow-2xl z-10 relative">
+        <div className="absolute -top-10 -left-10 w-40 h-40 bg-sky-500 rounded-full opacity-30 blur-2xl animate-pulse" />
+        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-600 rounded-full opacity-30 blur-2xl animate-pulse" />
 
-        {/* Right Side - Form */}
-        <div className="w-full md:w-1/2 p-8">
-          <h3 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-            Password Reset
-          </h3>
+        <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center mb-4 md:mb-6 drop-shadow-md">
+          Forgot Password?
+        </h3>
 
-          {emailSent ? (
-            <div className="text-center text-green-600 text-sm">
-              A password reset link has been sent to <strong>{email}</strong>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <p className="text-xs sm:text-sm text-indigo-200 text-center mb-6 italic">
+          No worries! We'll send you a reset link.
+        </p>
+
+        {emailSent ? (
+          <div className="text-center text-green-400 text-sm">
+            A password reset link has been sent to <strong>{email}</strong>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 z-10 relative">
+            <div className="relative">
               <input
                 type="email"
+                name="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="w-full bg-white/10 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-white/70"
               />
+            </div>
 
-              {errorMsg && (
-                <p className="text-red-500 text-sm">{errorMsg}</p>
-              )}
+            {errorMsg && (
+              <p className="text-red-400 text-sm text-center">{errorMsg}</p>
+            )}
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
-              >
-                {isLoading ? "Sending..." : "Send Reset Link"}
-              </button>
-            </form>
-          )}
-
-          <div className="text-center mt-6 text-sm">
-            <Link
-              to="/login"
-              className="text-indigo-600 hover:underline font-medium"
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-indigo-500 to-sky-500 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:opacity-90 transition"
             >
-              Back to Login
-            </Link>
-          </div>
+              {isLoading ? "Sending..." : "Send Reset Link"}
+            </button>
+          </form>
+        )}
+
+        <div className="text-center mt-6 text-sm sm:text-base">
+          <Link
+            to="/login"
+            className="text-indigo-300 hover:underline font-medium"
+          >
+            Back to Login
+          </Link>
         </div>
+
+        <p className="text-center text-white/60 text-xs sm:text-sm mt-6">
+          Still stuck? Contact support at{" "} <br />
+          <span className="underline">help@skillhub.com</span>
+        </p>
       </div>
     </div>
   );
