@@ -107,7 +107,7 @@ const Home = () => {
         {/* Logos */}
         <div className="mt-14 flex flex-wrap items-center justify-center gap-10 relative z-10">
           {[
-            { src: "/logos/iith.png", alt: "IIT Hyderabad" },
+            { src: "./Brand Logo/techstreet.png", alt: "IIT Hyderabad" },
             { src: "/logos/microsoft.png", alt: "Microsoft" },
             { src: "/logos/amazon.png", alt: "Amazon" },
             { src: "/logos/google.png", alt: "Google" },
@@ -116,7 +116,7 @@ const Home = () => {
               key={i}
               src={logo.src}
               alt={logo.alt}
-              className="h-8 grayscale hover:grayscale-0 transition duration-300 ease-in-out"
+              className="h-8  hover:grayscale-0 transition duration-300 ease-in-out"
             />
           ))}
         </div>

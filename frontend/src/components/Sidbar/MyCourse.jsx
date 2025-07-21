@@ -3,20 +3,39 @@ import { useUserContext } from "../../context/UserContext";
 import { CircleCheck, Clock } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Loading from "../Loading/Loading";
 
 const MyCourses = () => {
-  const { myCourse: courses, courseProgress, getMyCourses } = useUserContext();
+  const {
+    myCourse: courses,
+    courseProgress,
+    getMyCourses,
+    getCourseProgress,
+    isLoading,
+  } = useUserContext();
   const [filter, setFilter] = useState("active");
   const naviagte = useNavigate();
 
   useEffect(() => {
     getMyCourses();
-  }, [getMyCourses]);
+    getCourseProgress();
+  }, []);
 
-  const filteredCourses = courses?.filter(() => {
-    const percentage = courseProgress?.percentage || 0;
-    return filter === "active" ? percentage < 100 : percentage === 100;
+  const percentage = (index) => {
+    if (!courseProgress || !courseProgress[index]) return 0;
+    return courseProgress[index]?.percentage || 0;
+  };
+  const filteredCourses = courses?.filter((course) => {
+    if (filter === "active") {
+      return percentage(courses.indexOf(course)) < 100;
+    } else {
+      return percentage(courses.indexOf(course)) === 100;
+    }
   });
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="w-full min-h-screen bg-white dark:bg-zinc-900 px-4 md:px-8 py-10">
@@ -45,7 +64,7 @@ const MyCourses = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCourses.map((course) => {
-            const percentage = courseProgress?.percentage || 0;
+            const coursepercentage = percentage(courses.indexOf(course));
 
             return (
               <div
@@ -74,7 +93,7 @@ const MyCourses = () => {
                     <div className="h-2 w-full bg-sky-200 dark:bg-zinc-700 rounded-full">
                       <div
                         className="h-2 bg-sky-600 rounded-full transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
+                        style={{ width: `${coursepercentage}%` }}
                       />
                     </div>
                     <div className="text-xs text-right mt-1 font-medium text-sky-600 dark:text-sky-400 flex items-center justify-end gap-1">

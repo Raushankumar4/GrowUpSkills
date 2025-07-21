@@ -66,7 +66,9 @@ export default function SearchCourse() {
                   {course.description}
                 </p>
                 <div className="mt-auto">
-                  <p className="text-blue-600 font-bold text-md mb-2">₹{course.price}</p>
+                  <p className="text-blue-600 font-bold text-md mb-2">
+                    ₹{course.price}
+                  </p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleCourseClick(course._id)}
@@ -74,19 +76,11 @@ export default function SearchCourse() {
                     >
                       View Course
                     </button>
-                    <button
-                      onClick={() => alert(`Buying course: ${course.title}`)} 
-                      className="flex-1 bg-green-600 text-white text-sm py-2 px-4 rounded hover:bg-green-700 transition duration-200"
-                    >
-                      Enroll Course
-                    </button>
                   </div>
                 </div>
-
               </div>
             </div>
           ))}
-
         </div>
       )}
     </div>

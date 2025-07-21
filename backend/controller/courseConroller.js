@@ -389,6 +389,42 @@ export const deleteLecture = async (req, res) => {
 
 export const getProgress = async (req, res) => {
   try {
+    const userId = req.user;
+
+    const allProgress = await Progress.find({ userId });
+
+    const progressData = await Promise.all(
+      allProgress.map(async (progress) => {
+        const course = await Course.findById(progress.courseId).populate(
+          "lectures"
+        );
+        const totalLectures = course.lectures.length;
+        const completedLectures = progress.completedLectures || [];
+        const completedCount = completedLectures.length;
+        const remainingCount = totalLectures - completedCount;
+        const percentage =
+          totalLectures > 0 ? (completedCount / totalLectures) * 100 : 0;
+
+        return {
+          courseId: progress.courseId,
+          completedLectures,
+          completedCount,
+          remainingCount,
+          totalLectures,
+          percentage: Math.floor(percentage),
+        };
+      })
+    );
+
+    res.status(200).json(progressData);
+  } catch (err) {
+    console.error("Error in getAllProgress:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getSingleCourseProgress = async (req, res) => {
+  try {
     const { courseId } = req.params;
     const userId = req.user;
 

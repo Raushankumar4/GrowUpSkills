@@ -23,6 +23,7 @@ import {
   getMyCourse,
   getProgress,
   getSingleCourse,
+  getSingleCourseProgress,
   searchCourse,
   updateCourse,
   updateLecture,
@@ -93,7 +94,9 @@ router
 router
   .route("/update-lecture/:lectureId")
   .put(isAuthenticated, videoUpload.single("videoUrl"), updateLecture);
-router.route("/:courseId").get(isAuthenticated, getProgress);
+router.route("/course-progress").get(isAuthenticated, getProgress);
+router.route("/:courseId").get(isAuthenticated, getSingleCourseProgress);
+
 router.route("/lectures/:cousreId").get(isAuthenticated, getCourseLectures);
 router.route("/create-course-quiz/quizzes").post(isAuthenticated, createQuiz);
 router.route("/quizzes/:quizId/submit").post(isAuthenticated, examsubmission);

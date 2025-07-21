@@ -59,8 +59,9 @@ export const UserProvider = ({ children }) => {
   const getCourseProgress = async (courseId) => {
     try {
       showLoading();
-      const { data } = await axiosInstance.get(courseId);
+      const { data } = await axiosInstance.get("course-progress");
       setCourseProgress(data || {});
+      return data;
     } catch (error) {
       console.error("Failed to fetch course progress:", error);
     } finally {
@@ -96,36 +97,29 @@ export const UserProvider = ({ children }) => {
     fetchProfile();
   }, [token]);
 
-  const contextValue = useMemo(() => ({
-    userData,
-    isLoading,
-    courses,
-    myCourse,
-    courseProgress,
-    course,
-    lectures,
-    fetchProfile,
-    getCourses,
-    getMyCourses,
-    getCourseProgress,
-    getSingleCourse,
-    getLectures,
-    showLoading,
-    hideLoading
-  }), [
-    userData,
-    isLoading,
-    courses,
-    myCourse,
-    courseProgress,
-    course,
-    lectures
-  ]);
+  const contextValue = useMemo(
+    () => ({
+      userData,
+      isLoading,
+      courses,
+      myCourse,
+      courseProgress,
+      course,
+      lectures,
+      fetchProfile,
+      getCourses,
+      getMyCourses,
+      getCourseProgress,
+      getSingleCourse,
+      getLectures,
+      showLoading,
+      hideLoading,
+    }),
+    [userData, isLoading, courses, myCourse, courseProgress, course, lectures]
+  );
 
   return (
-    <UserContext.Provider value={contextValue}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useUserContext } from "@/context/UserContext";
+import { Link } from "react-router-dom";
 
 const CourseSlide = () => {
   const { courses, getCourses } = useUserContext();
@@ -82,12 +83,12 @@ const CourseSlide = () => {
         transition={{ duration: 0.5 }}
         className="mt-12 text-center"
       >
-        <a
-          href="/courses"
+        <Link
+          to="/courses"
           className="inline-block px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-full transition"
         >
           View All Courses →
-        </a>
+        </Link>
       </motion.div>
     </section>
   );

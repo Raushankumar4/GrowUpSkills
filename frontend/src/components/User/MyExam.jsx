@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "@/context/UserContext"; // Assuming you have this
+import { useUserContext } from "@/context/UserContext";
 
 const MyExam = () => {
   const { myCourse, getMyCourses } = useUserContext();
@@ -8,7 +8,7 @@ const MyExam = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getMyCourses(); // Load available courses
+    getMyCourses();
   }, []);
 
   const handleStartExam = () => {
@@ -20,35 +20,47 @@ const MyExam = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center my-8">My Exams</h1>
-      <p className="text-center text-gray-600 mb-4">
-        Here you can view and manage your exams.
-      </p>
+    <div className="min-h-screen bg-gradient-to-br from-white via-sky-50 to-white py-12 px-4">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+        <h1 className="text-3xl font-bold text-sky-600 text-center mb-4">
+          🎯 My Exams
+        </h1>
+        <p className="text-center text-gray-500 mb-8">
+          Select a course below to begin your exam. Good luck!
+        </p>
 
-      <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <label className="block text-gray-700 mb-2 text-lg">
-          Select an Exam:
-        </label>
-        <select
-          value={selectedCourseId}
-          onChange={(e) => setSelectedCourseId(e.target.value)}
-          className="w-full border border-gray-300 rounded px-4 py-2 mb-4 focus:outline-purple-500"
-        >
-          <option value="">-- Select Course --</option>
-          {myCourse?.map((course) => (
-            <option key={course._id} value={course._id}>
-              {course.title}
-            </option>
-          ))}
-        </select>
+        <div className="space-y-6">
+          <div>
+            <label
+              htmlFor="courseSelect"
+              className="block text-gray-700 font-medium text-lg mb-2"
+            >
+              Select a Course
+            </label>
+            <select
+              id="courseSelect"
+              value={selectedCourseId}
+              onChange={(e) => setSelectedCourseId(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white shadow-sm text-gray-700 focus:ring-2 focus:ring-sky-500 focus:outline-none transition"
+            >
+              <option value="">-- Choose your enrolled course --</option>
+              {myCourse?.map((course) => (
+                <option key={course._id} value={course._id}>
+                  {course.title}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <button
-          onClick={handleStartExam}
-          className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition"
-        >
-          Attempt Exam
-        </button>
+          <div className="pt-4">
+            <button
+              onClick={handleStartExam}
+              className="w-full py-3 bg-sky-600 text-white rounded-xl text-lg font-semibold hover:bg-sky-700 transition-all shadow-md hover:shadow-lg"
+            >
+              🚀 Attempt Exam Now
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

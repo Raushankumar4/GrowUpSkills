@@ -1,45 +1,60 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { ArrowPathIcon, CalendarDaysIcon } from "@heroicons/react/24/solid";
 import { useUserContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import getCookie from "@/hooks/getCookie";
+import Loading from "../Loading/Loading";
 
 const DashboardContent = () => {
-  const { myCourse, getMyCourses, getCourseProgress, courseProgress } =
-    useUserContext();
+  const {
+    myCourse,
+    getMyCourses,
+    getCourseProgress,
+    courseProgress,
+    isLoading,
+  } = useUserContext();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getMyCourses();
-  }, []);
+  console.log("Course", courseProgress);
+
+  const token = getCookie("token");
 
   useEffect(() => {
-    if (!myCourse || myCourse.length === 0) return;
-
-    myCourse.forEach((course) => {
-      if (course?._id) {
-        getCourseProgress(course?._id);
-      }
-    });
+    if (myCourse?.length > 0) {
+      getCourseProgress();
+    }
   }, [myCourse]);
 
-  const handleDownloadCertificate = (courseId) => {
-    console.log("Downloading certificate for:", courseId);
+  const mycourseprogress = (index) => {
+    if (!courseProgress || !courseProgress[index]) return 0;
+    return courseProgress[index]?.percentage || 0;
   };
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    } else {
+      getMyCourses();
+    }
+  }, [token, navigate]);
+
+  const handleDownloadCertificate = useCallback((courseId) => {
+    console.log("Downloading certificate for:", courseId);
+  }, []);
 
   return (
     <div className="flex-1 bg-white p-4 sm:p-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Side: Courses */}
         <div className="lg:col-span-2">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             {myCourse?.length > 0 ? (
               <>
-                Continue <span className="text-purple-600">Learning</span>
+                Continue <span className="text-sky-600">Learning</span>
               </>
             ) : (
               <>
                 No Courses Yet.{" "}
-                <span className="text-purple-600">Get Started!</span>
+                <span className="text-sky-600">Get Started!</span>
               </>
             )}
           </h2>
@@ -47,7 +62,8 @@ const DashboardContent = () => {
           {myCourse?.length > 0 ? (
             <div className="grid sm:grid-cols-2 gap-4">
               {myCourse.map((course, index) => {
-                const progress = courseProgress?.percentage || 0;
+                const progressData = mycourseprogress(index);
+                const progress = progressData || 0;
 
                 return (
                   <div
@@ -62,25 +78,25 @@ const DashboardContent = () => {
                           "https://via.placeholder.com/300x180?text=Course+Image"
                         }
                         alt="Course"
-                        className="w-full h-full object-fit"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                     <h3 className="font-semibold text-gray-800 text-sm sm:text-base mb-1">
                       {course?.title || "Untitled Course"}
                     </h3>
-                    <div className="w-full bg-purple-200 h-2 rounded-full mb-1">
+                    <div className="w-full bg-sky-200 h-2 rounded-full mb-1">
                       <div
-                        className="bg-purple-600 h-2 rounded-full transition-all duration-500"
+                        className="bg-sky-600 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${progress}%` }}
                       ></div>
                     </div>
-                    <p className="text-right text-xs text-purple-600">
+                    <p className="text-right text-xs text-sky-600">
                       {progress === 100 ? "Completed" : `${progress}%`}
                     </p>
 
                     {progress === 100 && (
                       <button
-                        className="mt-3 w-full px-4 py-2 bg-purple-600 text-white text-sm rounded-xl hover:bg-purple-700 transition"
+                        className="mt-3 w-full px-4 py-2 bg-sky-600 text-white text-sm rounded-xl hover:bg-sky-700 transition"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDownloadCertificate(course?._id);
@@ -94,7 +110,7 @@ const DashboardContent = () => {
               })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center bg-purple-50 border border-purple-100 rounded-xl p-6 mt-4 sm:mt-8">
+            <div className="flex flex-col items-center justify-center text-center bg-sky-50 border border-sky-100 rounded-xl p-6 mt-4 sm:mt-8">
               <img
                 src="https://via.placeholder.com/150x100?text=No+Courses"
                 alt="No Courses"
@@ -108,7 +124,7 @@ const DashboardContent = () => {
               </p>
               <button
                 onClick={() => navigate("/courses")}
-                className="px-5 py-2 bg-purple-600 text-white text-sm sm:text-base rounded-full hover:bg-purple-700 transition"
+                className="px-5 py-2 bg-sky-600 text-white text-sm sm:text-base rounded-full hover:bg-sky-700 transition"
               >
                 Browse Courses
               </button>
@@ -116,18 +132,18 @@ const DashboardContent = () => {
           )}
         </div>
 
-        {/* Right Side: Classes & Updates */}
-        {myCourse.length < 0 && (
+        {/* Future Class Section — Not Visible if no content */}
+        {false && (
           <div className="mt-6 lg:mt-0">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-800">
-                Today’s <span className="text-purple-600">Classes</span>
+                Today’s <span className="text-sky-600">Classes</span>
               </h2>
               <div className="flex space-x-2">
-                <button className="p-2 bg-purple-100 hover:bg-purple-200 text-purple-600 rounded-full">
+                <button className="p-2 bg-sky-100 hover:bg-sky-200 text-sky-600 rounded-full">
                   <ArrowPathIcon className="w-5 h-5" />
                 </button>
-                <button className="p-2 bg-purple-100 hover:bg-purple-200 text-purple-600 rounded-full">
+                <button className="p-2 bg-sky-100 hover:bg-sky-200 text-sky-600 rounded-full">
                   <CalendarDaysIcon className="w-5 h-5" />
                 </button>
               </div>
@@ -135,9 +151,8 @@ const DashboardContent = () => {
             <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
               <p className="text-gray-500">No Classes Scheduled Today.</p>
             </div>
-
             <h2 className="mt-8 text-lg font-semibold text-gray-800">
-              Class <span className="text-purple-600">Updates</span>
+              Class <span className="text-sky-600">Updates</span>
             </h2>
             <div className="bg-gray-50 p-4 mt-2 rounded-lg shadow-sm">
               <p className="text-gray-500">No New Updates.</p>

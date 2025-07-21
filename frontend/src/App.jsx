@@ -3,12 +3,12 @@ import { useEffect } from "react";
 import Navbar from "./components/Navbar/Navbar";
 import getCookie from "./hooks/getCookie";
 import { useUserContext } from "./context/UserContext";
-
+import Loading from "./components/Loading/Loading";
 
 function App() {
   const { fetchProfile } = useUserContext();
   const navigate = useNavigate();
-  const cookie = getCookie("token")
+  const cookie = getCookie("token");
 
   useEffect(() => {
     if (!cookie) {
@@ -17,8 +17,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetchProfile()
-  }, [])
+    fetchProfile();
+  }, []);
 
   return (
     <div>

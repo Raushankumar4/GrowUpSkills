@@ -63,6 +63,20 @@ export default function UpdateProfile() {
     avatarRef.current.click();
   };
 
+  const handleSuggestBio = () => {
+    const { username, college } = formData;
+    const templates = [
+      `Hi! I'm ${username}, a passionate learner from ${college}. I love exploring new technologies and growing my skills.`,
+      `Hey there! I'm ${username}, currently studying at ${college}. I'm always up for challenges and love working on real-world projects.`,
+      `I'm ${username}, a dedicated student from ${college}, enthusiastic about personal growth, learning, and collaboration.`,
+      `${username} here from ${college}. I'm interested in web development, tech innovations, and making an impact through my work.`,
+    ];
+
+    const randomBio = templates[Math.floor(Math.random() * templates.length)];
+    setFormData((prev) => ({ ...prev, bio: randomBio }));
+    showSuccessToast("✨ AI-generated bio applied! You can still edit it.");
+  };
+
   const handleSave = async () => {
     setIsLoading(true);
     setHasError(false);
@@ -87,9 +101,7 @@ export default function UpdateProfile() {
           const percent = Math.round((e.loaded * 100) / e.total);
           setProgress(percent);
           if (percent === 100) {
-            setTimeout(() => {
-              setProgress(0);
-            }, 1000);
+            setTimeout(() => setProgress(0), 1000);
           }
         },
       });
@@ -97,7 +109,6 @@ export default function UpdateProfile() {
       await fetchProfile();
       showSuccessToast(data?.message || "Profile updated successfully!");
       setIsLoading(false);
-      setHasError(false);
     } catch (error) {
       setIsLoading(false);
       setHasError(true);
@@ -117,7 +128,7 @@ export default function UpdateProfile() {
           />
           <div
             onClick={handleClick}
-            className="absolute bottom-0 right-0 bg-gray-300 p-2 rounded-full cursor-pointer"
+            className="absolute bottom-0 right-0 bg-sky-500 p-2 rounded-full cursor-pointer"
           >
             <svg
               className="h-5 w-5 text-white"
@@ -150,128 +161,130 @@ export default function UpdateProfile() {
         </div>
 
         {/* Form */}
-        <div className="mt-8 w-full p-6 rounded-xl space-y-6">
-          {/* Username */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Name *
-            </label>
-            <input
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              type="text"
-              required
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email ✔
-            </label>
-            <input
-              name="email"
-              value={formData.email}
-              disabled
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 bg-gray-100"
-              type="email"
-            />
-          </div>
-
-          {/* Mobile */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Mobile *
-            </label>
-            <div className="flex mt-1">
-              <span className="inline-flex items-center px-3 bg-gray-100 border border-r-0 border-gray-300 text-gray-600 text-sm rounded-l-md">
-                🇮🇳 +91
-              </span>
+        <div className="mt-8 w-full p-6 rounded-xl bg-white shadow space-y-6">
+          {/* Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Username */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Name *
+              </label>
               <input
-                name="mobile"
-                value={formData.mobile}
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-r-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                type="tel"
+                className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-sky-500"
                 required
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Email ✔
+              </label>
+              <input
+                name="email"
+                value={formData.email}
+                disabled
+                className="w-full mt-1 border border-gray-300 rounded px-3 py-2 bg-gray-100"
+              />
+            </div>
+
+            {/* Mobile */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Mobile *
+              </label>
+              <div className="flex mt-1">
+                <span className="inline-flex items-center px-3 bg-gray-100 border border-r-0 border-gray-300 text-gray-600 text-sm rounded-l-md">
+                  🇮🇳 +91
+                </span>
+                <input
+                  name="mobile"
+                  value={formData.mobile}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-r-md px-3 py-2 focus:ring-2 focus:ring-sky-500"
+                />
+              </div>
+            </div>
+
+            {/* College */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                College Name *
+              </label>
+              <input
+                name="college"
+                value={formData.college}
+                onChange={handleChange}
+                className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-sky-500"
+              />
+            </div>
+
+            {/* Gender */}
+            <div className="col-span-2">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Gender *
+              </label>
+              <div className="flex items-center gap-6">
+                {["Male", "Female", "Other"].map((g) => (
+                  <label key={g} className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value={g}
+                      checked={formData.gender === g}
+                      onChange={handleChange}
+                      className="text-sky-600"
+                    />
+                    <span className="ml-2 capitalize">{g}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* DOB */}
+            <div className="col-span-2">
+              <label className="text-sm font-medium text-gray-700">
+                Date of Birth
+              </label>
+              <input
+                type="date"
+                name="dob"
+                value={formData.dob}
+                onChange={handleChange}
+                className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-sky-500"
               />
             </div>
           </div>
 
-          {/* College */}
+          {/* Bio with AI Suggestion */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              College Name *
-            </label>
-            <input
-              name="college"
-              value={formData.college}
-              onChange={handleChange}
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              type="text"
-              required
-            />
-          </div>
-
-          {/* Gender */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender *
-            </label>
-            <div className="flex items-center gap-6">
-              {["Male", "Female", "Other"].map((g) => (
-                <label key={g} className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value={g}
-                    checked={formData.gender === g}
-                    onChange={handleChange}
-                    className="text-blue-600"
-                  />
-                  <span className="ml-2 capitalize">{g}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* DOB */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Date of Birth
-            </label>
-            <input
-              type="date"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Bio */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Bio
-            </label>
+            <label className="text-sm font-medium text-gray-700">Bio</label>
             <textarea
               name="bio"
               value={formData.bio}
               onChange={handleChange}
               rows={4}
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-sky-500"
               placeholder="Tell us about yourself..."
-            ></textarea>
+            />
+            <button
+              onClick={handleSuggestBio}
+              type="button"
+              className="mt-2 text-sm text-sky-600 hover:underline"
+            >
+              ✨ Suggest Bio with AI
+            </button>
           </div>
 
-          {/* Save / Retry Button */}
+          {/* Save */}
           <div className="text-right mt-4">
             {progress > 0 && (
               <div className="w-full bg-gray-200 rounded-full h-4 mb-2 overflow-hidden relative">
                 <div
-                  className="bg-indigo-600 h-4 transition-all duration-300 text-white text-xs flex items-center justify-center"
+                  className="bg-sky-500 h-4 transition-all duration-300 text-white text-xs flex items-center justify-center"
                   style={{ width: `${progress}%` }}
                 >
                   <span className="px-1">{progress}%</span>
@@ -281,7 +294,7 @@ export default function UpdateProfile() {
             <button
               disabled={isLoading}
               onClick={handleSave}
-              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition disabled:opacity-50"
+              className="bg-sky-600 text-white px-6 py-2 rounded hover:bg-sky-700 transition disabled:opacity-50"
             >
               {isLoading ? "Updating..." : hasError ? "Retry" : "Save"}
             </button>

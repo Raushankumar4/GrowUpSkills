@@ -1,7 +1,7 @@
-import axiosInstance from '@/Axios/AxiosInstance';
-import React, { useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { useParams } from 'react-router-dom';
+import axiosInstance from "@/Axios/AxiosInstance";
+import React, { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useParams } from "react-router-dom";
 
 const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,14 +10,14 @@ const ResetPassword = () => {
   const [error, setError] = useState({});
   const [formData, setFormData] = useState({
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
-  const [apiError, setApiError] = useState('');
+  const [apiError, setApiError] = useState("");
   const { token } = useParams();
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const isValid = () => {
@@ -36,98 +36,109 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setApiError('');
+    setApiError("");
     if (!isValid()) return;
 
     try {
       const { data } = await axiosInstance.post(`reset-password/${token}`, {
-        password: formData.password
+        password: formData.password,
       });
       console.log(data);
       setSubmitted(true);
     } catch (error) {
-      const msg = error.response?.data?.message || 'Something went wrong';
+      const msg = error.response?.data?.message || "Something went wrong";
       setApiError(msg);
       console.error(msg);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 px-4">
-      <div className="bg-white shadow-xl rounded-xl w-full max-w-2xl overflow-hidden flex flex-col md:flex-row">
-        {/* Left Section */}
-        <div className="hidden md:block md:w-1/2 bg-indigo-500 text-white p-8">
-          <h2 className="text-3xl font-bold mb-4">Reset Your Password</h2>
-          <p className="text-sm">
-            Create a strong new password to secure your account.
-          </p>
-        </div>
+    <div className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-10 py-10 font-inter bg-skillhub-pattern overflow-hidden">
+      <div className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 sm:p-8 md:p-10 shadow-2xl z-10 relative">
+        <div className="absolute -top-10 -left-10 w-40 h-40 bg-sky-600 rounded-full opacity-30 blur-2xl animate-pulse" />
+        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-600 rounded-full opacity-30 blur-2xl animate-pulse" />
 
-        {/* Right Section */}
-        <div className="w-full md:w-1/2 p-8">
-          <h3 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-            Set New Password
-          </h3>
+        <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center mb-4 md:mb-6 drop-shadow-md">
+          Reset Password
+        </h3>
 
-          {submitted ? (
-            <div className="text-center text-green-600 text-sm">
-              Your password has been successfully reset.
-              <div className="mt-4">
-                <a href="/" className="text-indigo-600 hover:underline font-medium">
-                  Return to Login
-                </a>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {apiError && <p className="text-red-500 text-sm">{apiError}</p>}
+        <p className="text-xs sm:text-sm text-indigo-200 text-center mb-6 italic">
+          Create a new password to secure your SkillHub account.
+        </p>
 
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="New Password"
-                  onChange={handleOnChange}
-                  name="password"
-                  value={formData.password}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-
-                />
-                <div
-                  className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </div>
-                {error.password && <p className="text-red-500 text-sm">{error.password}</p>}
-              </div>
-
-              <div className="relative">
-                <input
-                  type={showConfirm ? 'text' : 'password'}
-                  placeholder="Confirm Password"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                  onChange={handleOnChange}
-                  value={formData.confirmPassword}
-                  name="confirmPassword"
-                />
-                <div
-                  className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                >
-                  {showConfirm ? <FaEyeSlash /> : <FaEye />}
-                </div>
-                {error.confirmPassword && <p className="text-red-500 text-sm">{error.confirmPassword}</p>}
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
+        {submitted ? (
+          <div className="text-center text-green-400 text-sm">
+            Your password has been successfully reset.
+            <div className="mt-4">
+              <a
+                href="/"
+                className="text-indigo-300 hover:underline font-medium"
               >
-                Reset Password
-              </button>
-            </form>
-          )}
-        </div>
+                Return to Login
+              </a>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 z-10 relative">
+            {apiError && (
+              <p className="text-red-400 text-sm text-center">{apiError}</p>
+            )}
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="New Password"
+                onChange={handleOnChange}
+                name="password"
+                value={formData.password}
+                className="w-full bg-white/10 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-white/70"
+              />
+              <div
+                className="absolute right-3 top-3 text-white/60 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </div>
+              {error.password && (
+                <p className="text-red-400 text-sm mt-1">{error.password}</p>
+              )}
+            </div>
+
+            <div className="relative">
+              <input
+                type={showConfirm ? "text" : "password"}
+                placeholder="Confirm Password"
+                onChange={handleOnChange}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                className="w-full bg-white/10 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-white/70"
+              />
+              <div
+                className="absolute right-3 top-3 text-white/60 cursor-pointer"
+                onClick={() => setShowConfirm(!showConfirm)}
+              >
+                {showConfirm ? <FaEyeSlash /> : <FaEye />}
+              </div>
+              {error.confirmPassword && (
+                <p className="text-red-400 text-sm mt-1">
+                  {error.confirmPassword}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-indigo-500 to-sky-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:opacity-90 transition"
+            >
+              Reset Password
+            </button>
+          </form>
+        )}
+
+        <p className="text-center text-white/60 text-xs sm:text-sm mt-6">
+          Need help? Contact{" "}
+          <span className="underline">support@skillhub.com</span>
+        </p>
       </div>
     </div>
   );
