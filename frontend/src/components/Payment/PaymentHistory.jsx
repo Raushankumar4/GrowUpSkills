@@ -41,45 +41,45 @@ const PaymentHistory = () => {
         <p className="text-gray-500 text-center">No payment records found.</p>
       ) : (
         <div className="space-y-6">
-          {paymentHistory.map((payment) => (
+          {paymentHistory?.map((payment) => (
             <div
-              key={payment._id}
-              className={`p-6 rounded-md shadow-md bg-white border-l-4 ${payment.status === 'success' ? 'border-green-500' : 'border-yellow-500'
+              key={payment?._id}
+              className={`p-6 rounded-md shadow-md bg-white border-l-4 ${payment?.status === 'success' ? 'border-green-500' : 'border-yellow-500'
                 }`}
             >
               <div className="flex justify-between mb-4">
                 <h3 className="text-xl font-semibold text-gray-700">
-                  {payment.course.title} — ₹{payment.course.price}
+                  {payment?.course?.title} — ₹{payment?.course?.price}
                 </h3>
                 <span
-                  className={`px-3 py-1 text-sm rounded-full font-medium ${payment.status === 'success'
+                  className={`px-3 py-1 text-sm rounded-full font-medium ${payment?.status === 'success'
                     ? 'bg-green-100 text-green-700'
                     : 'bg-yellow-100 text-yellow-700'
                     }`}
                 >
-                  {payment.status.toUpperCase()}
+                  {payment?.status?.toUpperCase()}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                 <div>
-                  <p><span className="font-medium">User:</span> {payment.user.username}</p>
-                  <p><span className="font-medium">Email:</span> {payment.user.email}</p>
+                  <p><span className="font-medium">User:</span> {payment?.user?.username}</p>
+                  <p><span className="font-medium">Email:</span> {payment?.user?.email}</p>
                 </div>
                 <div>
-                  <p><span className="font-medium">Order ID:</span> {payment.razorpay_order_id}</p>
-                  <p><span className="font-medium">Amount Paid:</span> ₹{payment.amount}</p>
-                  <p><span className="font-medium">Date:</span> {new Date(payment.createdAt).toLocaleString()}</p>
+                  <p><span className="font-medium">Order ID:</span> {payment?.razorpay_order_id}</p>
+                  <p><span className="font-medium">Amount Paid:</span> ₹{payment?.amount}</p>
+                  <p><span className="font-medium">Date:</span> {new Date(payment?.createdAt)?.toLocaleString()}</p>
                 </div>
 
                 {payment.status === 'success' && (
                   <>
                     <div>
-                      <p><span className="font-medium">Payment ID:</span> {payment.razorpay_payment_id}</p>
-                      <p><span className="font-medium">Signature:</span> {payment.razorpay_signature}</p>
+                      <p><span className="font-medium">Payment ID:</span> {payment?.razorpay_payment_id}</p>
+                      <p><span className="font-medium">Signature:</span> {payment?.razorpay_signature}</p>
                     </div>
                     <div>
-                      <p><span className="font-medium">Confirmed At:</span> {new Date(payment.purchaseConfirmedAt).toLocaleString()}</p>
+                      <p><span className="font-medium">Confirmed At:</span> {new Date(payment?.purchaseConfirmedAt).toLocaleString()}</p>
                     </div>
                   </>
                 )}
